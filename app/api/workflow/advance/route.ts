@@ -1,10 +1,9 @@
-import {createHash, timingSafeEqual} from "node:crypto";
-
 import {NextResponse} from "next/server";
 import {z} from "zod";
 
 import {MAX_JSON_BODY_BYTES, readJsonBody} from "../../../../lib/http/json-body";
 import {SANITY_DOCUMENT_ID_PATTERN} from "../../../../lib/http/sanity-id";
+import {checkWorkshopPin} from "../../../../lib/workshop/auth";
 import {computeOffers} from "../../../../lib/offers";
 import {DEFAULT_OFFER_RATES} from "../../../../lib/offers/rates";
 import {
@@ -154,8 +153,6 @@ class WorkflowAdvanceConflictError extends Error {
   }
 }
 
-const MIN_WORKSHOP_PIN_LENGTH = 12;
-
 type Operation = unknown;
 
 export interface WorkflowAdvanceDependencies {
@@ -208,23 +205,10 @@ async function parseJsonBody(request: Request): Promise<unknown> {
   }
 }
 
-function constantTimeSecretEqual(expected: string, supplied: string): boolean {
-  // Hashing first keeps both inputs at a fixed length, including malformed
-  // or attacker-controlled values, before timingSafeEqual is called.
-  const expectedBytes = createHash("sha256").update(expected, "utf8").digest();
-  const suppliedBytes = createHash("sha256").update(supplied, "utf8").digest();
-  return timingSafeEqual(expectedBytes, suppliedBytes);
-}
-
 function requireWorkshopPin(request: Request): void {
-  const configured = process.env.WORKSHOP_PIN?.trim();
-  if (!configured || configured.length < MIN_WORKSHOP_PIN_LENGTH) {
-    throw new MissingWorkflowConfigurationError();
-  }
-  const supplied = request.headers.get("x-workshop-pin");
-  if (!supplied || !constantTimeSecretEqual(configured, supplied)) {
-    throw new UnauthorizedWorkflowError();
-  }
+  const check = checkWorkshopPin(request.headers);
+  if (check === "unconfigured") throw new MissingWorkflowConfigurationError();
+  if (check === "unauthorized") throw new UnauthorizedWorkflowError();
 }
 
 function parseRequest(input: unknown): WorkflowAdvanceRequest {
