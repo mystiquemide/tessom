@@ -38,7 +38,7 @@ WORKSHOP_PIN
 GROQ_API_KEY
 ```
 
-The intended public configuration targets Sanity project `doc10v5g` and dataset `production`. The example uses the development workflow tag `tessom-dev`. Keep write access and workshop credentials in the local environment only.
+The intended public configuration targets Sanity project `59g78icb` and dataset `production`. The example uses the development workflow tag `tessom-dev`. Keep write access and workshop credentials in the local environment only.
 
 `WORKSHOP_PIN` must be a long random secret of at least 12 characters. Send it in the accepted `x-workshop-pin` header when calling `POST /api/workflow/advance`.
 
