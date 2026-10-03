@@ -20,7 +20,7 @@ Built for the DEV x Sanity Challenge.
 Workshop PIN for the live site: `tessom-judges-2026`
 
 1. Open `/shop` and pick a fabric. Hover a cut and the plan redraws it on the real photo.
-2. Open the same piece in a second tab. Order the same cut in both. One order is accepted and the other gets a conflict.
+2. Open the same piece in a second window, side by side. Order a cut in one. The other window updates by itself, with no reload: the sold area is stamped and the competing cuts disappear. Try ordering the same cut in both and one is refused.
 3. Open `/workshop`, enter the PIN, and move your order along: cut, sewn, shipped. The buyer's page at `/order/[id]` follows.
 4. On the board, open the Awaiting consent column and press Copy owner link. Open it, and approve or decline the offcut. That is the Workflows consent stage.
 5. Query the live data yourself. See the two queries below.
@@ -55,7 +55,7 @@ A workshop logs an offcut with its size, pattern repeat, direction, flaws and a 
 
 The remnant owns its allocations, so what is sold lives in one place. Orders use a private ID path, so the public dataset returns none of them.
 
-Paste these into a terminal:
+Paste these into a terminal, or open `/studio` and run them in the Vision tab:
 
 ```sh
 # Every offcut, its owner, and how many areas are already sold
@@ -102,6 +102,15 @@ awaiting-consent --grant--> listed --allocate--> allocated --mark-cut--> cut
 | `grant`, `decline` | The fabric's owner | A private link signed for that owner |
 | `allocate` | A buyer placing an order | The order API recomputes the offer, then locks the area |
 | `mark-cut`, `mark-sewn`, `mark-shipped` | The workshop | The workshop PIN |
+
+Two orders for the same cut, fired at the same moment against the live dataset:
+
+```
+request 1 -> HTTP 409  {"error": "The remnant changed while the order was being placed"}
+request 2 -> HTTP 200  {"orderId": "orders.c878c437725fbf72", "remnantId": "remnant-09", "templateId": "template-01", "price": 113.11, "ownerShare": 4.65}
+```
+
+The winner's panels become sold areas on the remnant (`areasSold: 3`). The loser leaves no workflow instance behind.
 
 Sanity Workflows 0.36 has no background runtime, so every route that changes data advances the workflow itself. The allocation guard and the area lock check the same thing, so they cannot disagree.
 
