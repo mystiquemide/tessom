@@ -117,3 +117,20 @@ export function formatPrice(value: number): string {
     maximumFractionDigits: 2,
   }).format(value);
 }
+
+export interface ShopStats {
+  pieces: number;
+  offers: number;
+  areaM2: number;
+}
+
+/** What is on the table right now, counted from the remnants that can be ordered. */
+export function shopStats(remnants: readonly ShopRemnant[]): ShopStats {
+  const open = orderable(remnants);
+  const areaCm2 = open.reduce((total, remnant) => total + remnant.widthCm * remnant.heightCm, 0);
+  return {
+    pieces: open.length,
+    offers: open.reduce((total, remnant) => total + remnant.offers.length, 0),
+    areaM2: Math.round(areaCm2 / 1000) / 10,
+  };
+}
