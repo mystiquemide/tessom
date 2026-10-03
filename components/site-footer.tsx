@@ -35,7 +35,6 @@ export async function SiteFooter() {
             </nav>
           )}
 
-
           <nav aria-label="Workshop">
             <p className="font-mono text-[13px] uppercase tracking-wide text-muted">Workshop</p>
             <ul className="mt-3 space-y-2 text-[14px]">
@@ -48,6 +47,12 @@ export async function SiteFooter() {
           </nav>
         </div>
 
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-rule pt-6 text-[13px] leading-[1.5] text-muted">
+          <p>Sample catalog: the fabrics, makers and owners shown are illustrative.</p>
+          <Link href="/privacy" className="inline-flex min-h-11 items-center text-ink underline-offset-[6px] hover:underline">
+            Privacy
+          </Link>
+        </div>
       </div>
     </footer>
   );

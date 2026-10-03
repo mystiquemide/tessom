@@ -138,7 +138,11 @@ export function OrderDialog({
               </p>
             )}
 
-            <p className="mt-4 text-[14px] leading-[1.71] text-body">This reserves the cut. The workshop will contact you at this email to arrange payment and shipping. You pay nothing now.</p>
+            <p className="mt-4 text-[14px] leading-[1.71] text-body">This reserves the cut. The workshop will contact you at this email to arrange payment and shipping. You pay nothing now.{" "}
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-ink underline underline-offset-[6px]">
+                How we use your details
+              </a>
+            </p>
 
             <div className="mt-6 flex items-center gap-3">
               <button

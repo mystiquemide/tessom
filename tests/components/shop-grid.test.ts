@@ -69,3 +69,9 @@ describe("ShopGrid", () => {
     expect(renderToStaticMarkup(createElement(ShopGrid, { remnants: [], allRemnants: all, kind: "tote" }))).toContain("See everything");
   });
 });
+
+describe("ShopGrid honesty note", () => {
+  it("says the catalog is a sample", () => {
+    expect(renderToStaticMarkup(createElement(ShopGrid, { remnants: [], allRemnants: [], kind: null }))).toContain("Sample catalog: the makers and owners shown are illustrative.");
+  });
+});

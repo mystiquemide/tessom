@@ -53,6 +53,7 @@ export function ShopGrid({remnants, allRemnants, kind}: {remnants: readonly Shop
       <div className="mx-auto max-w-2xl text-center">
         <h1 className="text-[clamp(32px,5vw,44px)] leading-[1.25] text-ink">On the table right now.</h1>
         <p className="mt-3 text-[16px] leading-[1.63] text-body">Each offcut is one of one. Order a cut and the fabric it uses is gone.</p>
+        <p className="mt-2 font-mono text-[13px] leading-[1.5] text-muted">Sample catalog: the makers and owners shown are illustrative.</p>
       </div>
 
       {kinds.length > 0 && (
