@@ -37,9 +37,45 @@ Workshop PIN for the live site: `tessom-judges-2026`
 
 ## How it works
 
-```
-Sanity Studio -> Content Lake -> offer engine -> storefront -> Workflows
- (log offcuts)   (public data)   (fits + prices)   (/shop)     (consent to shipped)
+```mermaid
+flowchart LR
+  subgraph people["People"]
+    direction TB
+    buyer["Buyer"]
+    owner["Fabric owner"]
+    workshop["Workshop"]
+  end
+
+  subgraph app["Next.js application"]
+    direction TB
+    shop["Storefront<br/>Live availability"]
+    engine["Offer engine<br/>Fit and price on read"]
+    order["Order API<br/>Recompute and revision-lock"]
+    consent["Signed consent API"]
+    board["PIN-protected board"]
+  end
+
+  subgraph sanity["Sanity"]
+    direction TB
+    studio["Studio<br/>Log offcuts and templates"]
+    lake[("Content Lake<br/>Remnants, templates, and orders")]
+    workflows["Workflows<br/>Consent to shipped"]
+  end
+
+  buyer --> shop
+  shop --> engine
+  shop --> order
+  owner --> consent
+  workshop --> studio
+  workshop --> board
+  studio --> lake
+  engine <-->|read| lake
+  order -->|atomic area lock| lake
+  consent --> workflows
+  order --> workflows
+  board --> workflows
+  workflows <--> lake
+  lake -. "live updates" .-> shop
 ```
 
 A workshop logs an offcut with its size, pattern repeat, direction, flaws and a photo. The owner says yes before it is listed. On every read, the offer engine fits each product pattern onto the free fabric and prices the fit. Offers are never stored, so nothing can go stale. An order locks the exact area it uses, so every other cut that needs it disappears.
@@ -87,14 +123,29 @@ curl -s -G 'https://59g78icb.api.sanity.io/v2025-02-19/data/query/production' \
 
 ## Workflow
 
-```
-awaiting-consent --grant--> listed --allocate--> allocated --mark-cut--> cut
-       |                       ^                                           |
-    decline                    |                                      mark-sewn
-       v                       |                                           v
-    returned            (fabric left over)   <--- shipped <--mark-shipped-- sewn
-                                                     |
-                                                     +--> sold-out (nothing left)
+```mermaid
+stateDiagram-v2
+  state "Awaiting consent" as awaitingConsent
+  state "Listed" as listed
+  state "Allocated" as allocated
+  state "Cut" as cut
+  state "Sewn" as sewn
+  state "Shipped" as shipped
+  state "Returned" as returned
+  state "Sold out" as soldOut
+
+  [*] --> awaitingConsent: consent instance
+  awaitingConsent --> listed: grant
+  awaitingConsent --> returned: decline
+  [*] --> listed: order instance
+  listed --> allocated: allocate
+  allocated --> cut: mark-cut
+  cut --> sewn: mark-sewn
+  sewn --> shipped: mark-shipped
+  shipped --> listed: fabric remains
+  shipped --> soldOut: nothing usable remains
+  returned --> [*]
+  soldOut --> [*]
 ```
 
 | Action | Fired by | How it is authorised |

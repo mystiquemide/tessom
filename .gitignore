@@ -58,3 +58,5 @@ sessions/
 planning/
 plans/
 WIN-PLAN.md
+.vercel
+.env*
