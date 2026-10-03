@@ -1,109 +1,104 @@
 # Tessom
 
-Every offcut has a next piece. Built for the DEV x Sanity Challenge.
+Every offcut has a next piece. Leftover upholstery fabric, cut into one-off cushions, pads and totes. The schema decides what is for sale.
 
-## The story
+![A cut plan: dashed blue panels drawn on a real offcut, with a hatched flaw kept clear](public/readme/cut-plan.png)
 
-Premium upholstery fabric can cost $100 or more a yard. The leftovers from a job are usually too small for another job, so they sit in a bin. The bigger ones often belong to the client, so the shop can't sell them without asking.
+| | |
+|---|---|
+| Live site | Deploying. The address goes here when it is live |
+| Sanity project ID | `59g78icb` |
+| Dataset | `production` (public read) |
+| DEV post | Pending |
 
-Working out what a leftover can still become means checking its size, pattern repeat, nap direction and flaws by hand. For a one-off piece, nobody does it.
+Built for the DEV x Sanity Challenge.
 
-There is no personal receipt behind this project. The proof is below: a tested offer engine and a live Sanity project you can query yourself.
+## Try it in 60 seconds
 
-## One line
+Workshop PIN for the live site: `tessom-judges-2026`
 
-I did not build a fabric marketplace, a cut-list calculator, or a mockup. I built a shop where every offer is computed from the real piece of fabric, and ordering one cut removes that fabric from every other offer.
+1. Open `/shop` and pick a fabric. Hover a cut and the plan redraws it on the real photo.
+2. Open the same piece in a second tab. Order the same cut in both. One order is accepted and the other gets a conflict.
+3. Open `/workshop`, enter the PIN, and move your order along: cut, sewn, shipped. The buyer's page at `/order/[id]` follows.
+4. On the board, open the Awaiting consent column and press Copy owner link. Open it, and approve or decline the offcut. That is the Workflows consent stage.
+5. Query the live data yourself. See the two queries below.
 
 ## How it works
 
-A workshop logs an offcut with its size, pattern repeat, direction, flaws and a photo. The fabric's owner says yes before anything is listed. The offer engine fits every product pattern onto the free fabric and prices each fit. An order locks the exact area it uses, so every other cut that needs it disappears.
-
-| Step | Who | What happens |
-|---|---|---|
-| Log | Workshop, in Sanity Studio at `/studio` | Size, repeat, direction, flaws, owner, photo |
-| Consent | Owner, through a private link | Grant or decline. Nothing is listed until they grant |
-| Offers | Server | Every template is fitted and priced. The client never supplies geometry or price |
-| Order | Buyer, at `/r/[id]` | The area is locked. A second buyer for the same area gets a conflict |
-| Production | Workshop, at `/workshop` behind a PIN | Allocated, cut, sewn, shipped. Each step is a Sanity Workflows action |
-| Follow | Buyer, at `/order/[id]` | Live progress. No contact details are shown |
-| Earnings | Owner, at `/owner/[id]` | Accrued share per piece. No payments are made |
-
-## Try it in 2 minutes
-
-The hosted app is not deployed yet. Two paths work today.
-
-Query the live data. The dataset is public, so no token is needed:
-
-```sh
-curl -g 'https://59g78icb.api.sanity.io/v2025-02-19/data/query/production?query=count(*[_type=="remnant"])'
+```
+Sanity Studio -> Content Lake -> offer engine -> storefront -> Workflows
+ (log offcuts)   (public data)   (fits + prices)   (/shop)     (consent to shipped)
 ```
 
-Run the app. See Run locally below. Then:
+A workshop logs an offcut with its size, pattern repeat, direction, flaws and a photo. The owner says yes before it is listed. On every read, the offer engine fits each product pattern onto the free fabric and prices the fit. Offers are never stored, so nothing can go stale. An order locks the exact area it uses, so every other cut that needs it disappears.
 
-1. Open `/shop` and pick a fabric.
-2. On the piece, hover an offer. The plan on the left redraws that cut on the real photo.
-3. Order a cut. Open the same piece in a second tab and order the same cut. The second tab is refused.
-4. Follow the order at `/order/[id]`, then move it along at `/workshop` with your PIN.
+## Schema
+
+| Type | Holds |
+|---|---|
+| `owner` | name, email, kind (client, designer, workshop), `shareBps` |
+| `remnant` | title, fabric (name, maker, value per metre), size, `repeat`, `directional`, `defects[]`, photo, `owner`, `status`, `allocations[]` |
+| `productTemplate` | name, kind, `pieces[]` (label, size, quantity), `seamCm`, `labourMin`, `fillCost`, image |
+| `order` | `remnant`, `template`, `placement[]`, price, `ownerShare`, `buyerContact` (encrypted), `workflowInstanceId` |
+
+The remnant owns its allocations, so what is sold lives in one place. Orders use a private ID path, so the public dataset returns none of them.
+
+Paste these into a terminal:
+
+```sh
+# Every offcut, its owner, and how many areas are already sold
+curl -s -G 'https://59g78icb.api.sanity.io/v2025-02-19/data/query/production' \
+  --data-urlencode 'query=*[_type=="remnant"]{title,status,"owner":owner->name,"areasSold":count(allocations)}'
+
+# Every workflow instance and the stage it is in
+curl -s -G 'https://59g78icb.api.sanity.io/v2025-02-19/data/query/production' \
+  --data-urlencode 'query=*[_type=="sanity.workflow.instance"]{_id,currentStage}'
+```
+
+Orders are not readable without a token:
+
+```sh
+curl -s -G 'https://59g78icb.api.sanity.io/v2025-02-19/data/query/production' \
+  --data-urlencode 'query=*[_type=="order"]'
+```
+
+## Workflow
+
+```
+awaiting-consent --grant--> listed --allocate--> allocated --mark-cut--> cut
+       |                       ^                                           |
+    decline                    |                                      mark-sewn
+       v                       |                                           v
+    returned            (fabric left over)   <--- shipped <--mark-shipped-- sewn
+                                                     |
+                                                     +--> sold-out (nothing left)
+```
+
+| Action | Fired by | How it is authorised |
+|---|---|---|
+| `grant`, `decline` | The fabric's owner | A private link signed for that owner |
+| `allocate` | A buyer placing an order | The order API recomputes the offer, then locks the area |
+| `mark-cut`, `mark-sewn`, `mark-shipped` | The workshop | The workshop PIN |
+
+Sanity Workflows 0.36 has no background runtime, so every route that changes data advances the workflow itself. The allocation guard and the area lock check the same thing, so they cannot disagree.
 
 ## 11 ways I tried to break it
 
-The suite has 240 tests across 29 files.
+The suite has 249 tests across 30 files.
 
 | Attempt | Outcome | Proof |
 |---|---|---|
 | Rotate pieces on a directional fabric | Refused | [offers.test.ts](tests/offers/offers.test.ts) |
 | Cut over a flaw or an area already sold | Never offered | [offers.test.ts](tests/offers/offers.test.ts) |
-| Ignore the pattern repeat | Pieces snap to repeat multiples, or the offer is dropped | [offers.test.ts](tests/offers/offers.test.ts) |
+| Ignore the pattern repeat | Panels snap to repeat multiples, or the offer is dropped | [offers.test.ts](tests/offers/offers.test.ts) |
 | Price an offer below the margin floor | Offer dropped | [offers.test.ts](tests/offers/offers.test.ts) |
-| Two buyers, same area | One order, one conflict, and no workflow starts for the loser | [order-service.test.ts](tests/orders/order-service.test.ts) |
-| Retry a checkout | Same key replays the same order, never a second one | [order-service.test.ts](tests/orders/order-service.test.ts) |
-| Read a buyer's contact from the dataset | Encrypted with a fresh IV per order | [orders.test.ts](tests/sanity/orders.test.ts) |
-| Move an order without the PIN | 401 | [workflow-advance-route.test.ts](tests/api/workflow-advance-route.test.ts) |
+| Two buyers, same area | One order, one conflict | [order-service.test.ts](tests/orders/order-service.test.ts) |
+| Retry a checkout | The same key replays the same order | [order-service.test.ts](tests/orders/order-service.test.ts) |
+| Read a buyer's contact from the dataset | Encrypted, fresh IV per order | [orders.test.ts](tests/sanity/orders.test.ts) |
+| Move an order without the PIN | 401, and a lockout after ten wrong tries | [workflow-advance-route.test.ts](tests/api/workflow-advance-route.test.ts) |
 | Decide consent with another owner's link | 401 | [owner-consent-route.test.ts](tests/api/owner-consent-route.test.ts) |
 | Find a contact on the buyer order page | None is returned | [order-status.test.ts](tests/order-status.test.ts) |
 | Re-seed over live orders | Refused without an explicit override | [seed.test.ts](tests/sanity/seed.test.ts) |
-
-I also ran the two-buyer case by hand in two browser tabs against the live dataset.
-
-## Live proof
-
-| Item | Value |
-|---|---|
-| Sanity project ID | `59g78icb` |
-| Dataset | `production`, public read |
-| Studio | `/studio` in the app |
-| Workflow | `remnant-lifecycle`, Sanity Workflows 0.36 |
-| Hosted app | Pending deploy |
-
-## Real usage
-
-No real customers yet. The live dataset holds test orders I placed while building.
-
-## How this differs
-
-| Alternative | What it does | How Tessom differs |
-|---|---|---|
-| Yardage calculators | Start from a design and work out how much fabric to buy | Start from a leftover piece and work out what it can become |
-| A rectangle-packing tutorial | Places boxes inside a box | Adds nap, repeat, flaws, pricing, owner consent, and a lock that holds against a second buyer |
-| Listing the remnant as it is | Sells loose fabric | Sells finished goods, and routes consent and earnings to the owner |
-
-## Honest limitations
-
-- No payments and no email. An order reserves the cut. The workshop reads the buyer's contact on the board and arranges payment and shipping by hand.
-- Rectangles only. There is no irregular-shape nesting.
-- Owner links have no expiry. Rotating `ORDER_ENCRYPTION_KEY` revokes them all, but it also makes stored buyer contacts unreadable.
-- Owner pages are public. Anyone can see each owner's accrued earnings.
-- The workshop PIN is one shared secret, held in the browser's memory only.
-- Sanity Workflows is early access (0.36) and has no background runtime, so route handlers drive every transition.
-- Unaudited hackathon code. Do not point it at real customers or payments.
-
-## What is real
-
-The shipped path is real: pricing, the area lock, the workflow stages, encrypted contacts, the PIN and owner keys, all against a live Sanity project.
-
-Not real: the 12 remnants, 6 owners and fabric makers are seed data I invented. The photos are real, from Unsplash. There is no AI in Tessom.
-
-Status: 240 tests passing, typecheck, lint and build clean.
 
 ## Run locally
 
@@ -120,11 +115,26 @@ Browsing the shop needs no secrets. Orders, the workshop board and the owner pag
 | Variable | Purpose |
 |---|---|
 | `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET` | Which Sanity dataset to use |
-| `SANITY_API_WRITE_TOKEN` | Server-side writes. Never exposed to the browser |
+| `SANITY_API_WRITE_TOKEN` | Server-side writes. Never sent to the browser |
 | `ORDER_ENCRYPTION_KEY` | 32 random bytes in base64. Encrypts buyer contacts and signs owner links |
 | `WORKSHOP_PIN` | At least 12 characters. Unlocks `/workshop` |
 | `WORKFLOW_TAG` | Names the workflow set, for example `tessom-dev` |
-| `NEXT_PUBLIC_SITE_URL` | Public URL, used for the share preview image |
+| `NEXT_PUBLIC_SITE_URL` | Public address, used for the share preview |
 | `ALLOW_PRODUCTION_SEED`, `ALLOW_DESTRUCTIVE_SEED` | Deliberate overrides the seed script requires |
 
 To set up your own project, run `npm run schema:deploy`, `npm run wf:deploy`, `npm run seed` and `npm run wf:bootstrap`.
+
+## Limitations
+
+- No payments and no email. An order reserves the cut. The workshop reads the buyer's contact on its board and arranges payment and shipping by hand.
+- Rectangles only. There is no irregular-shape nesting.
+- The workshop uses one shared PIN. Wrong tries are rate-limited per address in memory, which slows a script on one server but is not shared across instances.
+- Owner links have no expiry. Rotating `ORDER_ENCRYPTION_KEY` revokes them all, and also makes stored buyer contacts unreadable.
+- Owner pages are public, so anyone can see each owner's accrued earnings. Owner emails sit in the public dataset. The seed data uses `example.com` addresses.
+- The catalog is sample data. The 12 offcuts, 6 owners and fabric makers are invented. The photos are real, from Unsplash. There is no AI in Tessom.
+- Sanity Workflows is early access (0.36).
+- Unaudited hackathon code. Do not point it at real customers or payments.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
