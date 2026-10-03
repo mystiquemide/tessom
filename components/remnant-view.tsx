@@ -8,6 +8,7 @@ import {useEffect, useRef, useState} from "react";
 import type {Rect} from "../lib/offers";
 import {cutsLabel, describeOfferPieces, formatPrice, planningFacts, type ShopOffer, type ShopRemnant} from "../lib/shop";
 import {CutPlan} from "./cut-plan";
+import {LiveRefresh} from "./live-refresh";
 import {OrderDialog, type PlacedOrder} from "./order-dialog";
 
 interface Row {
@@ -143,6 +144,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
         </div>
       </div>
 
+      <LiveRefresh remnantId={remnant.id} />
       {dialogOffer && <OrderDialog remnant={remnant} offer={dialogOffer} onClose={onClose} onPlaced={onPlaced} />}
     </main>
   );

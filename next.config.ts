@@ -15,7 +15,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://cdn.sanity.io",
   "font-src 'self' data:",
-  "connect-src 'self'",
+  "connect-src 'self' https://*.api.sanity.io",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",
