@@ -1,5 +1,6 @@
 import type {SanityReadClient} from "../sanity/client";
 import {sanityImageUrl, type SanityImageSource} from "../sanity/image";
+import {ownerLinkPath} from "../owners/link";
 import {decryptBuyerContact} from "../sanity/orders";
 import {formatPrice} from "../shop";
 
@@ -12,6 +13,8 @@ export interface BoardCard {
   subtitle: string;
   details: string[];
   photoUrl: string | null;
+  /** Private page for the owner to decide consent. Set on cards waiting for consent. */
+  ownerLink?: string;
   /** Set on order cards. The advance route needs it to move the order. */
   workflowInstanceId?: string;
   action?: {name: BoardAction; label: string};
@@ -26,7 +29,7 @@ export interface BoardColumn {
 
 export const BOARD_QUERY = `{
   "remnants": *[_type == "remnant" && status in ["intake", "consented", "listed"]] | order(_id asc){
-    _id, title, status, widthCm, heightCm, photo, "owner": owner->name
+    _id, title, status, widthCm, heightCm, photo, "owner": owner->name, "ownerId": owner._ref
   },
   "orders": *[_type == "order"] | order(createdAt asc){
     _id, createdAt, price, workflowInstanceId, buyerContact,
@@ -45,6 +48,7 @@ interface RawRemnant {
   heightCm: number;
   photo?: SanityImageSource | null;
   owner?: string | null;
+  ownerId?: string | null;
 }
 
 interface RawOrder {
@@ -105,13 +109,15 @@ export function buildBoard(data: RawBoard, environment: Record<string, string | 
   const byId = new Map(columns.map((column) => [column.id, column]));
 
   for (const remnant of data.remnants) {
-    const column = byId.get(remnant.status === "listed" ? "listed" : "awaiting-consent")!;
+    const waiting = remnant.status !== "listed";
+    const column = byId.get(waiting ? "awaiting-consent" : "listed")!;
     column.cards.push({
       id: remnant._id,
       title: remnant.title,
       subtitle: remnant.owner ? `Owner: ${remnant.owner}` : "No owner recorded",
       details: [`${remnant.widthCm} × ${remnant.heightCm} cm`],
       photoUrl: sanityImageUrl(remnant.photo, 240),
+      ownerLink: waiting && remnant.ownerId ? (ownerLinkPath(remnant.ownerId, environment) ?? undefined) : undefined,
     });
   }
 

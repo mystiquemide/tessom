@@ -59,6 +59,33 @@ function PinGate({onUnlock, error, busy}: {onUnlock: (pin: string) => void; erro
   );
 }
 
+function CopyOwnerLink({path}: {path: string}) {
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+  const url = typeof window === "undefined" ? path : `${window.location.origin}${path}`;
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(url);
+            setState("copied");
+            setTimeout(() => setState("idle"), 2500);
+          } catch {
+            setState("failed");
+          }
+        }}
+        className="w-full rounded-pill bg-paper px-3 py-1.5 text-[14px] font-semibold text-ink shadow-hairline hover:shadow-card"
+      >
+        {state === "copied" ? "Link copied" : "Copy owner link"}
+      </button>
+      {state === "failed" && (
+        <input readOnly value={url} onFocus={(event) => event.currentTarget.select()} aria-label="Owner link" className="mt-2 w-full rounded-[4px] border border-charcoal bg-paper px-2 py-1 font-mono text-[12px] text-ink" />
+      )}
+    </div>
+  );
+}
+
 function Card({card, busy, error, onAdvance}: {card: BoardCard; busy: boolean; error: string | undefined; onAdvance: (card: BoardCard) => void}) {
   return (
     <li className="rounded-card bg-paper p-3 shadow-card">
@@ -72,6 +99,7 @@ function Card({card, busy, error, onAdvance}: {card: BoardCard; busy: boolean; e
       {card.details.length > 0 && (
         <p className="mt-2 font-mono text-[12px] leading-[1.5] text-body">{card.details.join(" · ")}</p>
       )}
+      {card.ownerLink && <CopyOwnerLink path={card.ownerLink} />}
       {card.action && (
         <button
           type="button"

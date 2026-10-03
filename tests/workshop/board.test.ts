@@ -1,6 +1,7 @@
 import { createCipheriv, randomBytes } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
+import { verifyOwnerKey } from "../../lib/owners/link";
 import { buildBoard, orderColumn, type RawBoard } from "../../lib/workshop/board";
 
 const KEY = randomBytes(32).toString("base64");
@@ -15,8 +16,8 @@ function encrypt(buyerName: string, buyerEmail: string) {
 
 const data: RawBoard = {
   remnants: [
-    { _id: "r1", title: "Teal Trellis", status: "listed", widthCm: 160, heightCm: 100, owner: "Clara Morrow" },
-    { _id: "r2", title: "Rose Clay Stripe", status: "consented", widthCm: 90, heightCm: 70, owner: null },
+    { _id: "r1", title: "Teal Trellis", status: "listed", widthCm: 160, heightCm: 100, owner: "Clara Morrow", ownerId: "owner-1" },
+    { _id: "r2", title: "Rose Clay Stripe", status: "consented", widthCm: 90, heightCm: 70, owner: null, ownerId: "owner-2" },
     { _id: "r3", title: "Petrol Cord", status: "intake", widthCm: 60, heightCm: 50 },
   ],
   orders: [
@@ -51,6 +52,17 @@ describe("buildBoard", () => {
     expect(column("listed").cards.map((c) => c.title)).toEqual(["Teal Trellis"]);
     expect([...column("awaiting-consent").cards, ...column("listed").cards].every((c) => c.action === undefined)).toBe(true);
     expect(column("listed").cards[0].subtitle).toBe("Owner: Clara Morrow");
+  });
+
+  it("gives awaiting-consent cards a working private owner link and nothing else", () => {
+    const rose = column("awaiting-consent").cards.find((c) => c.title === "Rose Clay Stripe")!;
+    expect(rose.ownerLink).toMatch(/^\/owner\/owner-2\?key=/);
+    const key = new URL(rose.ownerLink!, "http://x").searchParams.get("key");
+    expect(verifyOwnerKey("owner-2", key, env)).toBe(true);
+    expect(verifyOwnerKey("owner-1", key, env)).toBe(false);
+    expect(column("awaiting-consent").cards.find((c) => c.title === "Petrol Cord")!.ownerLink).toBeUndefined();
+    expect(column("listed").cards[0].ownerLink).toBeUndefined();
+    expect(column("allocated").cards[0].ownerLink).toBeUndefined();
   });
 
   it("gives each order the next real action and shows only the buyer's first name", () => {
