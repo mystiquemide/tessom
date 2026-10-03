@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+:root {
+  --chalk: #f6f3ec;
+  --thread: #1c1b19;
+  --mat: #2f5d50;
+  --chalkblue: #3b6ea5;
+  --rust: #b4532a;
+  --paper: #ffffff;
+}
+
+@theme inline {
+  --color-chalk: var(--chalk);
+  --color-thread: var(--thread);
+  --color-mat: var(--mat);
+  --color-chalkblue: var(--chalkblue);
+  --color-rust: var(--rust);
+  --color-paper: var(--paper);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--chalk);
+  color: var(--thread);
+}
