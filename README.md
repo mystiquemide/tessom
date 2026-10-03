@@ -2,6 +2,8 @@
 
 Every offcut has a next piece. Leftover upholstery fabric, cut into one-off cushions, pads and totes. The schema decides what is for sale.
 
+[![CI](https://github.com/mystiquemide/tessom/actions/workflows/ci.yml/badge.svg)](https://github.com/mystiquemide/tessom/actions/workflows/ci.yml)
+
 ![A cut plan: dashed blue panels drawn on a real offcut, with a hatched flaw kept clear](public/readme/cut-plan.png)
 
 | | |
@@ -143,7 +145,7 @@ Browsing the shop needs no secrets. Orders, the workshop board and the owner pag
 | `NEXT_PUBLIC_SITE_URL` | Public address, used for the share preview |
 | `ALLOW_PRODUCTION_SEED`, `ALLOW_DESTRUCTIVE_SEED` | Deliberate overrides the seed script requires |
 
-To set up your own project, run `npm run schema:deploy`, `npm run wf:deploy`, `npm run seed` and `npm run wf:bootstrap`.
+To set up your own project, run `npm run schema:deploy`, `npm run wf:deploy`, `npm run seed` and `npm run wf:bootstrap`. The seed does not carry photos. To add them, set `UNSPLASH_ACCESS_KEY` and run `npx tsx scripts/attach-photos.ts`.
 
 ## What broke, and how I fixed it
 
@@ -167,6 +169,28 @@ To set up your own project, run `npm run schema:deploy`, `npm run wf:deploy`, `n
 - The catalog is sample data. The 12 offcuts, 6 owners and fabric makers are invented. The photos are real, from Unsplash. There is no AI in Tessom.
 - Sanity Workflows is early access (0.36).
 - Unaudited hackathon code. Do not point it at real customers or payments.
+
+## Credits
+
+Fabric and product photographs are from [Unsplash](https://unsplash.com), used under the Unsplash License. Photographers:
+
+- [Anna Kharkivska](https://unsplash.com/photos/two-chairs-and-a-small-table-on-wooden-floor-QBRHpMT2sD8)
+- [Art Institute of Chicago](https://unsplash.com/photos/a-blue-and-white-floral-pattern-on-a-gray-background-_yEfDp-rtLI)
+- [Darrell Jonathan](https://unsplash.com/photos/a-close-up-of-a-bed-with-a-yellow-bedspread-E9RC7yIWeA8)
+- [Deconovo](https://unsplash.com/photos/brown-wicker-armchair-with-gray-throw-pillow-YckKVuyey-4)
+- [Europeana](https://unsplash.com/photos/diagonal-pattern-of-brown-and-beige-batik-fabric-6qNaCfKp_gc)
+- [Giorgio Trovato](https://unsplash.com/photos/a-blue-bag-sitting-on-top-of-a-white-chair-E5M98Nox2JA)
+- [Kaiyu Wu](https://unsplash.com/photos/orange-textile-PkTvSZe6rcg)
+- [Lucas de Moura](https://unsplash.com/photos/a-brown-couch-with-two-pillows-on-it-b0kTwnDM1O0)
+- [Mitchell Luo](https://unsplash.com/photos/green-textile-in-close-up-image-8acRvqOAjpw)
+- [Moonstarious Project](https://unsplash.com/photos/a-close-up-of-a-blue-fabric-on-a-white-surface-QXuFCRq8rcQ)
+- [Rick Rothenberg](https://unsplash.com/photos/a-blue-and-black-wall-with-a-pattern-on-it-Ts_f_hGlgOE)
+- [Rob Wingate](https://unsplash.com/photos/window-curtain-open-wide-Fd9tUmRBJzk)
+- [Smithsonian](https://unsplash.com/photos/pink-background-with-vertical-red-and-white-patterned-stripes-WWdLd0gemgs)
+- [The Cleveland Museum of Art](https://unsplash.com/photos/a-close-up-of-a-green-and-white-rug--B6iItEAKVE)
+- [antipillingfabric manufacturers](https://unsplash.com/photos/a-close-up-view-of-a-white-fabric-W_lQogTM6Os)
+
+Built with Next.js, Sanity (Studio, Content Lake and Workflows), Tailwind CSS, Zod and Vitest. Type is Fraunces, Inter, JetBrains Mono and Grenze Gotisch, all under the SIL Open Font License. The Sanity mark comes from Simple Icons.
 
 ## License
 
