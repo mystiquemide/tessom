@@ -3,7 +3,9 @@ import {z} from "zod";
 
 import {MAX_JSON_BODY_BYTES, readJsonBody} from "../../../../lib/http/json-body";
 import {SANITY_DOCUMENT_ID_PATTERN} from "../../../../lib/http/sanity-id";
+import {tooManyRequests} from "../../../../lib/http/rate-limit";
 import {checkWorkshopPin} from "../../../../lib/workshop/auth";
+import {pinAttemptsBlocked, recordPinFailure} from "../../../../lib/workshop/pin-guard";
 import {computeOffers} from "../../../../lib/offers";
 import {DEFAULT_OFFER_RATES} from "../../../../lib/offers/rates";
 import {
@@ -747,11 +749,14 @@ function responseForError(error: unknown): NextResponse {
 }
 
 export async function POST(request: Request): Promise<NextResponse> {
+  const waitSec = pinAttemptsBlocked(request);
+  if (waitSec !== null) return tooManyRequests(waitSec);
   try {
     requireWorkshopPin(request);
     const input = parseRequest(await parseJsonBody(request));
     return jsonResponse(await advanceWorkflow(input));
   } catch (error) {
+    if (error instanceof UnauthorizedWorkflowError) recordPinFailure(request);
     return responseForError(error);
   }
 }

@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {z} from "zod";
 
 import {MAX_JSON_BODY_BYTES, readJsonBody} from "../../../../lib/http/json-body";
+import {clientKey, createRateLimiter, tooManyRequests} from "../../../../lib/http/rate-limit";
 import {SANITY_DOCUMENT_ID_PATTERN} from "../../../../lib/http/sanity-id";
 import {verifyOwnerKey} from "../../../../lib/owners/link";
 import {createSanityServerClient} from "../../../../lib/sanity/client";
@@ -31,7 +32,11 @@ function respond(body: unknown, status: number): NextResponse {
  * Lets an owner decide consent on their own pieces. The signed key replaces the workshop PIN,
  * and the decision runs through the same workflow code the workshop board uses.
  */
+const decisions = createRateLimiter({limit: 20, windowMs: 10 * 60 * 1000});
+
 export async function POST(request: Request): Promise<NextResponse> {
+  const attempt = decisions.check(clientKey(request));
+  if (!attempt.allowed) return tooManyRequests(attempt.retryAfterSec);
   let input: z.infer<typeof bodySchema>;
   try {
     const parsed = bodySchema.safeParse(await readJsonBody(request, MAX_JSON_BODY_BYTES));

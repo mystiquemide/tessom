@@ -5,7 +5,9 @@ import {MAX_JSON_BODY_BYTES, readJsonBody} from "../../../../lib/http/json-body"
 import {SANITY_DOCUMENT_ID_PATTERN} from "../../../../lib/http/sanity-id";
 import {createSanityServerClient} from "../../../../lib/sanity/client";
 import {decryptBuyerContact} from "../../../../lib/sanity/orders";
+import {tooManyRequests} from "../../../../lib/http/rate-limit";
 import {checkWorkshopPin} from "../../../../lib/workshop/auth";
+import {pinAttemptsBlocked, recordPinFailure} from "../../../../lib/workshop/pin-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,9 +23,14 @@ function respond(body: unknown, status: number): NextResponse {
 
 /** Shows the workshop who ordered, so it can email them to arrange payment and shipping. PIN only. */
 export async function POST(request: Request): Promise<NextResponse> {
+  const waitSec = pinAttemptsBlocked(request);
+  if (waitSec !== null) return tooManyRequests(waitSec);
   const check = checkWorkshopPin(request.headers);
   if (check === "unconfigured") return respond({error: "The board is unavailable right now"}, 503);
-  if (check === "unauthorized") return respond({error: "Unauthorized"}, 401);
+  if (check === "unauthorized") {
+    recordPinFailure(request);
+    return respond({error: "Unauthorized"}, 401);
+  }
 
   let orderId: string;
   try {

@@ -1,5 +1,6 @@
 import {NextResponse} from "next/server";
 import {MAX_JSON_BODY_BYTES, readJsonBody} from "../../../lib/http/json-body";
+import {clientKey, createRateLimiter, tooManyRequests} from "../../../lib/http/rate-limit";
 import {isSanityDocumentId} from "../../../lib/http/sanity-id";
 
 import {
@@ -342,7 +343,12 @@ function responseForError(error: unknown): NextResponse {
   return jsonResponse({error: "Unable to place order"}, 500);
 }
 
+/** Six order attempts in ten minutes per address. Orders reserve real fabric, so scripts must not drain the shop. */
+const orderAttempts = createRateLimiter({limit: 6, windowMs: 10 * 60 * 1000});
+
 export async function POST(request: Request): Promise<NextResponse> {
+  const attempt = orderAttempts.check(clientKey(request));
+  if (!attempt.allowed) return tooManyRequests(attempt.retryAfterSec);
   try {
     const input = await parseJsonBody(request);
     if (!hasValidDocumentIds(input)) throw new BadOrderRequestError("Invalid order request");
