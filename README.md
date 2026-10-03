@@ -6,7 +6,7 @@ Every offcut has a next piece. Leftover upholstery fabric, cut into one-off cush
 
 | | |
 |---|---|
-| Live site | Deploying. The address goes here when it is live |
+| Live site | https://tessom.midelabs.xyz |
 | Sanity project ID | `59g78icb` |
 | Dataset | `production` (public read) |
 | DEV post | Pending |
