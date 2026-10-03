@@ -30,6 +30,8 @@ export interface CutPlanProps {
   freshAllocations?: readonly Rect[];
   /** When set, this offer is drawn solid and the others fade back. */
   activeOfferId?: string | null;
+  /** Word on the stamp over sold areas. */
+  stampLabel?: string;
   /** Piece labels. Auto shows them for the active offer, or when only one offer is drawn. */
   labels?: "auto" | "all" | "none";
   className?: string;
@@ -57,6 +59,7 @@ export function CutPlan({
   freshAllocations = [],
   activeOfferId = null,
   labels = "auto",
+  stampLabel = "Sold",
   className = "",
 }: CutPlanProps) {
   const uid = useId().replace(/:/g, "");
@@ -185,7 +188,7 @@ export function CutPlan({
             height: pct(area.h, heightCm),
           }}
         >
-          <span className="-rotate-[4deg] border border-stamp/40 px-3 py-1">Sold</span>
+          <span className="-rotate-[4deg] border border-stamp/40 px-3 py-1">{stampLabel}</span>
         </span>
       ))}
     </div>

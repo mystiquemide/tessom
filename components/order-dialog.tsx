@@ -165,9 +165,14 @@ export function OrderDialog({
               {offer.name} from {remnant.title} is yours. The workshop will email {email.trim()} to arrange payment and shipping.
             </p>
             <p className="mt-3 font-mono text-[14px] text-muted">Order {phase.orderId}</p>
-            <button type="button" onClick={() => dialogRef.current?.close()} className="mt-6 rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
-              Done
-            </button>
+            <div className="mt-6 flex items-center gap-4">
+              <button type="button" onClick={() => dialogRef.current?.close()} className="rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+                Done
+              </button>
+              <a href={`/order/${encodeURIComponent(phase.orderId)}`} className="text-[16px] text-ink underline-offset-[6px] hover:underline">
+                Track this order
+              </a>
+            </div>
           </div>
         )}
 

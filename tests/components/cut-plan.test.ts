@@ -39,6 +39,10 @@ describe("CutPlan", () => {
     expect(render({ offers: [offers[0]] })).toContain("Back 27×17");
   });
 
+  it("lets the stamp say something else", () => {
+    expect(render({ allocations: [{ x: 0, y: 0, w: 10, h: 10 }], stampLabel: "Yours" })).toContain(">Yours<");
+  });
+
   it("stamps sold areas once, on the largest one", () => {
     const html = render({ allocations: [{ x: 0, y: 0, w: 10, h: 10 }, { x: 20, y: 0, w: 60, h: 40 }] });
     expect(html.match(/>Sold</g)).toHaveLength(1);
