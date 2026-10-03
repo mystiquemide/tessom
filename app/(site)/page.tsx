@@ -1,9 +1,9 @@
-import {BuiltOn} from "../components/built-on";
-import {ClosingCta} from "../components/closing-cta";
-import {Hero} from "../components/hero";
-import {HowItWorks} from "../components/how-it-works";
-import {Stats} from "../components/stats";
-import {fetchShopRemnants, orderable, shopStats} from "../lib/shop";
+import {BuiltOn} from "../../components/built-on";
+import {ClosingCta} from "../../components/closing-cta";
+import {Hero} from "../../components/hero";
+import {HowItWorks} from "../../components/how-it-works";
+import {Stats} from "../../components/stats";
+import {fetchShopRemnants, orderable, shopStats} from "../../lib/shop";
 
 export const dynamic = "force-dynamic";
 

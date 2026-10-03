@@ -1,8 +1,8 @@
 import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 
-import {RemnantView} from "../../../components/remnant-view";
-import {fetchShopRemnants, findShopRemnant} from "../../../lib/shop";
+import {RemnantView} from "../../../../components/remnant-view";
+import {fetchShopRemnants, findShopRemnant} from "../../../../lib/shop";
 
 export const dynamic = "force-dynamic";
 

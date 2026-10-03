@@ -1,8 +1,6 @@
 import type {Metadata} from "next";
 import {Fraunces, Grenze_Gotisch, Inter, JetBrains_Mono} from "next/font/google";
 
-import {SiteFooter} from "../components/site-footer";
-import {SiteNav} from "../components/site-nav";
 import "./globals.css";
 
 const fraunces = Fraunces({subsets: ["latin"], variable: "--font-fraunces", axes: ["opsz"]});
@@ -21,12 +19,7 @@ export default function RootLayout({children}: Readonly<{children: React.ReactNo
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable} ${jetbrains.variable} ${grenze.variable}`}>
       <body>
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded-pill focus:bg-ink focus:px-4 focus:py-2 focus:text-paper">
-          Skip to content
-        </a>
-        <SiteNav />
-        <div id="main" className="flex-1">{children}</div>
-        <SiteFooter />
+        {children}
       </body>
     </html>
   );

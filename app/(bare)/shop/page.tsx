@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
 
-import {ShopGrid} from "../../components/shop-grid";
-import {fetchShopRemnants, filterByKind, isShopKind} from "../../lib/shop";
+import {ShopGrid} from "../../../components/shop-grid";
+import {fetchShopRemnants, filterByKind, isShopKind} from "../../../lib/shop";
 
 export const dynamic = "force-dynamic";
 

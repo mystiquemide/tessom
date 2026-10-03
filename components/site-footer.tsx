@@ -12,7 +12,7 @@ export async function SiteFooter() {
   return (
     <footer className="mt-20 border-t border-rule bg-recessed">
       <div className="mx-auto max-w-page px-6 py-12">
-        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div className="max-w-sm">
             <Logo />
             <p className="mt-3 text-[14px] leading-[1.71] text-body">
@@ -35,21 +35,6 @@ export async function SiteFooter() {
             </nav>
           )}
 
-          <nav aria-label="About">
-            <p className="font-mono text-[12px] uppercase tracking-wide text-muted">How it works</p>
-            <ul className="mt-3 space-y-2 text-[14px]">
-              <li>
-                <Link href="/#how" className={linkClass}>
-                  Logged, consented, cut
-                </Link>
-              </li>
-              <li>
-                <Link href="/shop" className={linkClass}>
-                  On the table now
-                </Link>
-              </li>
-            </ul>
-          </nav>
 
           <nav aria-label="Workshop">
             <p className="font-mono text-[12px] uppercase tracking-wide text-muted">Workshop</p>
