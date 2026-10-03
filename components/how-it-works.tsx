@@ -8,7 +8,7 @@ function ConsentPill() {
         <circle cx="8" cy="8" r="8" fill="#10756a" />
         <path d="M4.5 8.3l2.2 2.2 4.8-4.9" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      Consent granted
+      Owner approved
     </span>
   );
 }
@@ -34,7 +34,7 @@ export function HowItWorks({remnants}: {remnants: readonly ShopRemnant[]}) {
 
   const steps = [
     {
-      title: "Logged",
+      title: "Measured",
       text: "The workshop measures every offcut: size, pattern repeat, nap direction and flaws. Then it goes in with a photo.",
       visual: logged && (
         <div className="relative">
@@ -46,7 +46,7 @@ export function HowItWorks({remnants}: {remnants: readonly ShopRemnant[]}) {
       ),
     },
     {
-      title: "Consented",
+      title: "Approved",
       text: "The fabric's owner says yes before anything is listed. Client leftovers stay with the client until they agree.",
       visual: consented && (
         <div className="relative">
@@ -59,7 +59,7 @@ export function HowItWorks({remnants}: {remnants: readonly ShopRemnant[]}) {
     },
     {
       title: "Cut",
-      text: "Every piece is planned to the centimetre. Order one and those pieces are locked, then the workshop cuts, sews and ships.",
+      text: "Every cut is planned to the centimetre. Order one and its fabric is reserved, then the workshop cuts, sews and ships.",
       visual: cut && plan(cut, true),
     },
   ];

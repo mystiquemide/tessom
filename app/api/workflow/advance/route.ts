@@ -141,14 +141,14 @@ class MissingWorkflowConfigurationError extends Error {
 
 class MissingWorkflowRecordError extends Error {
   constructor() {
-    super("Workflow record not found");
+    super("Not found");
     this.name = "MissingWorkflowRecordError";
   }
 }
 
 class WorkflowAdvanceConflictError extends Error {
   constructor() {
-    super("Workflow state changed, retry the action");
+    super("This changed while you were working. Try again.");
     this.name = "WorkflowAdvanceConflictError";
   }
 }
@@ -732,18 +732,18 @@ function responseForError(error: unknown): NextResponse {
   }
   if (error instanceof UnauthorizedWorkflowError) return jsonResponse({error: "Unauthorized"}, 401);
   if (error instanceof MissingWorkflowRecordError) {
-    return jsonResponse({error: "Workflow record not found"}, 404);
+    return jsonResponse({error: "Not found"}, 404);
   }
   if (isConflictLike(error) || error instanceof SanityRevisionConflictError) {
-    return jsonResponse({error: "Workflow state changed, retry the action"}, 409);
+    return jsonResponse({error: "This changed while you were working. Try again."}, 409);
   }
   if (isMissingConfiguration(error)) {
-    return jsonResponse({error: "Workflow service is unavailable"}, 503);
+    return jsonResponse({error: "Service unavailable"}, 503);
   }
   if (error instanceof SanityDataValidationError) {
-    return jsonResponse({error: "Unable to read workflow state"}, 500);
+    return jsonResponse({error: "Something went wrong. Try again."}, 500);
   }
-  return jsonResponse({error: "Unable to advance workflow"}, 500);
+  return jsonResponse({error: "Something went wrong. Try again."}, 500);
 }
 
 export async function POST(request: Request): Promise<NextResponse> {

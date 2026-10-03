@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { describeOfferPieces, planningFacts, type ShopOffer, type ShopRemnant } from "../lib/shop";
+import { cutsLabel, describeOfferPieces, planningFacts, type ShopOffer, type ShopRemnant } from "../lib/shop";
 
 const piece = (label: string, wCm: number, hCm: number) => ({ x: 0, y: 0, w: wCm + 2, h: hCm + 2, rotated: false, label, wCm, hCm });
 const offer: ShopOffer = { id: "t", name: "Cushion", kind: "cushion", imageUrl: null, fingerprint: "f", price: 50, ownerShare: 5, pieces: [piece("Front", 45, 45), piece("Back", 45, 45), piece("Back", 45, 45)] };
@@ -20,7 +20,7 @@ describe("planningFacts", () => {
   it("states only what the remnant data says", () => {
     expect(planningFacts(base)).toEqual([
       "160 × 100 cm of Teal Trellis from Mill.",
-      "This fabric has no direction, so pieces can be turned to fit.",
+      "This fabric has no direction, so panels can be turned to fit.",
     ]);
   });
 
@@ -29,13 +29,21 @@ describe("planningFacts", () => {
       ...base, directional: true, repeat: { vCm: 32, hCm: 16 },
       defects: [{ x: 0, y: 0, w: 5, h: 5 }], allocations: [{ x: 0, y: 0, w: 5, h: 5 }, { x: 9, y: 9, w: 5, h: 5 }],
     });
-    expect(facts[1]).toContain("every piece is cut the same way up");
-    expect(facts).toContain("The pattern repeats every 32 cm down and 16 cm across. Pieces are placed to line up with it.");
-    expect(facts).toContain("One flaw is hatched on the plan. No piece is cut over a flaw.");
+    expect(facts[1]).toContain("every panel is cut the same way up");
+    expect(facts).toContain("The pattern repeats every 32 cm down and 16 cm across. Panels are placed to line up with it.");
+    expect(facts).toContain("One flaw is hatched on the plan. No panel is cut over a flaw.");
     expect(facts).toContain("2 areas are already ordered and shown darkened.");
   });
 
   it("handles a repeat in one direction only", () => {
-    expect(planningFacts({ ...base, repeat: { hCm: 20 } })).toContain("The pattern repeats every 20 cm across. Pieces are placed to line up with it.");
+    expect(planningFacts({ ...base, repeat: { hCm: 20 } })).toContain("The pattern repeats every 20 cm across. Panels are placed to line up with it.");
+  });
+});
+
+describe("cutsLabel", () => {
+  it("pluralises", () => {
+    expect(cutsLabel(1)).toBe("1 cut to choose from");
+    expect(cutsLabel(4)).toBe("4 cuts to choose from");
+    expect(cutsLabel(0)).toBe("0 cuts to choose from");
   });
 });

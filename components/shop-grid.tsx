@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import {availableKinds, formatPrice, fromPrice, KIND_LABELS, shelfOrder, type ShopKind, type ShopRemnant} from "../lib/shop";
+import {availableKinds, cutsLabel, formatPrice, fromPrice, KIND_LABELS, shelfOrder, type ShopKind, type ShopRemnant} from "../lib/shop";
 import {CutPlan} from "./cut-plan";
 
 function chipClass(active: boolean): string {
@@ -21,7 +21,7 @@ function ShopCard({remnant}: {remnant: ShopRemnant}) {
           widthCm={remnant.widthCm}
           heightCm={remnant.heightCm}
           photoUrl={remnant.photoUrl}
-          ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres, ${remnant.offers.length} ways to cut it`}
+          ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres, ${cutsLabel(remnant.offers.length)}`}
           defects={remnant.defects}
           allocations={remnant.allocations}
           offers={remnant.offers}
@@ -34,10 +34,10 @@ function ShopCard({remnant}: {remnant: ShopRemnant}) {
         </div>
         <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">
           {remnant.widthCm} × {remnant.heightCm} cm
-          {remnant.offers.length === 0 ? "" : ` · ${remnant.offers.length} ${remnant.offers.length === 1 ? "offer" : "offers"}`}
+          {remnant.offers.length === 0 ? "" : ` · ${remnant.offers.length} ${remnant.offers.length === 1 ? "cut" : "cuts"}`}
         </p>
-        {partlySold && <p className="mt-2 text-[14px] leading-[1.71] text-body">Part of this piece is sold. What&apos;s left is below.</p>}
-        {spokenFor && <p className="mt-2 text-[14px] leading-[1.71] text-body">Fully spoken for. Every cut from this piece has been ordered.</p>}
+        {partlySold && <p className="mt-2 text-[14px] leading-[1.71] text-body">Part of this offcut is sold. The rest is still available.</p>}
+        {spokenFor && <p className="mt-2 text-[14px] leading-[1.71] text-body">Fully spoken for. Every cut from this offcut has been ordered.</p>}
         {tooSmall && <p className="mt-2 text-[14px] leading-[1.71] text-body">Too small for anything in our pattern book.</p>}
       </article>
     </Link>
@@ -52,7 +52,7 @@ export function ShopGrid({remnants, allRemnants, kind}: {remnants: readonly Shop
     <section id="shop" className="mx-auto max-w-page px-6 pt-16 sm:pt-20">
       <div className="mx-auto max-w-2xl text-center">
         <h1 className="text-[clamp(32px,5vw,44px)] leading-[1.25] text-ink">On the table right now.</h1>
-        <p className="mt-3 text-[16px] leading-[1.63] text-body">Each piece is one of one. Order a cut and the fabric it uses is gone.</p>
+        <p className="mt-3 text-[16px] leading-[1.63] text-body">Each offcut is one of one. Order a cut and the fabric it uses is gone.</p>
       </div>
 
       {kinds.length > 0 && (

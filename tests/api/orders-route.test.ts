@@ -277,7 +277,7 @@ describe("POST /api/orders", () => {
 
     expect(response.status).toBe(503);
     expect(body).toEqual({
-      error: "The order was saved but workflow activation is pending",
+      error: "Your order was received and is being finalised.",
       orderId: "orders.replayed",
       workflowInstanceId: "workflow/pending",
       recoveryRequired: true,
@@ -546,7 +546,7 @@ describe("POST /api/orders", () => {
     const body = await json(response);
 
     expect(response.status).toBe(503);
-    expect(body).toEqual({error: "The order workflow could not be prepared", retryable: true});
+    expect(body).toEqual({error: "We couldn't place the order. Try again.", retryable: true});
     expect(mockedCommitAllocatedOrder).not.toHaveBeenCalled();
   });
 

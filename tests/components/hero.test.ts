@@ -32,8 +32,8 @@ describe("Hero", () => {
     expect(html).toContain("Teal Trellis");
     expect(html).toContain("from $85.55");
     expect(html).toContain("160 × 100 cm");
-    expect(html).toContain("2 offers");
-    expect(html).toContain("Consent granted");
+    expect(html).toContain("2 cuts");
+    expect(html).toContain("Owner approved");
   });
 
   it("shows no cards and no stamp when nothing is on the table", () => {

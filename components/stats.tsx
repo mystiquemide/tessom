@@ -3,7 +3,7 @@ import type {ShopStats} from "../lib/shop";
 export function Stats({stats}: {stats: ShopStats}) {
   const items = [
     {count: stats.pieces, value: String(stats.pieces), label: stats.pieces === 1 ? "offcut on the table" : "offcuts on the table"},
-    {count: stats.offers, value: String(stats.offers), label: stats.offers === 1 ? "way to cut them" : "ways to cut them"},
+    {count: stats.offers, value: String(stats.offers), label: stats.offers === 1 ? "cut to choose from" : "cuts to choose from"},
     {count: stats.areaM2, value: `${stats.areaM2} m²`, label: "of premium fabric waiting"},
   ].filter((item) => item.count > 0);
 

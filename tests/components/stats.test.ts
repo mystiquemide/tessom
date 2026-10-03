@@ -21,7 +21,7 @@ describe("Stats", () => {
   it("renders each non-zero figure, including small areas", () => {
     const html = renderToStaticMarkup(createElement(Stats, { stats: { pieces: 1, offers: 2, areaM2: 0.5 } }));
     expect(html).toContain("offcut on the table");
-    expect(html).toContain("ways to cut them");
+    expect(html).toContain("cuts to choose from");
     expect(html).toContain("0.5 m²");
   });
 

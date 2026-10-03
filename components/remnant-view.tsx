@@ -6,7 +6,7 @@ import {useRouter} from "next/navigation";
 import {useEffect, useRef, useState} from "react";
 
 import type {Rect} from "../lib/offers";
-import {describeOfferPieces, formatPrice, planningFacts, type ShopOffer, type ShopRemnant} from "../lib/shop";
+import {cutsLabel, describeOfferPieces, formatPrice, planningFacts, type ShopOffer, type ShopRemnant} from "../lib/shop";
 import {CutPlan} from "./cut-plan";
 import {OrderDialog, type PlacedOrder} from "./order-dialog";
 
@@ -60,7 +60,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
               widthCm={remnant.widthCm}
               heightCm={remnant.heightCm}
               photoUrl={remnant.photoUrl}
-              ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres. ${remnant.offers.length} ways to cut it.`}
+              ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres. ${cutsLabel(remnant.offers.length)}.`}
               defects={remnant.defects}
               allocations={remnant.allocations}
               freshAllocations={fresh}
@@ -69,7 +69,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
               className="border border-charcoal/60"
             />
           </div>
-          <p className="mt-3 font-mono text-[12px] leading-[1.5] text-muted">Dashed blue is the cut. Hatching is a flaw. Each square on the grid is 10 cm.</p>
+          <p className="mt-3 font-mono text-[12px] leading-[1.5] text-muted">Dashed blue shows where we cut. Hatching is a flaw. Each square on the grid is 10 cm.</p>
         </div>
 
         <div>
@@ -80,9 +80,9 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
           </p>
 
           {rows.length > 0 ? (
-            <section aria-label="Ways to cut this piece" className="mt-8">
+            <section aria-label="Cuts for this offcut" className="mt-8">
               <p className="text-[14px] leading-[1.71] text-body">
-                Order one and the fabric it uses is gone. Cuts that need the same fabric disappear. Photos show an example of each finished item, not this fabric.
+                Each offcut is one of one. Order a cut and any other cut that needs the same fabric disappears. Product photos are examples, not made from this fabric.
               </p>
               <ul className="mt-4 space-y-3">
                 {rows.map(({offer, leaving}) => (
@@ -102,7 +102,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
                         <h2 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{offer.name}</h2>
                         <p className="mt-0.5 font-mono text-[12px] leading-[1.5] text-muted">{describeOfferPieces(offer)}</p>
                         <p className="mt-1 font-mono text-[14px] leading-[1.71] text-ink">
-                          {formatPrice(offer.price)} <span className="text-rust">· Owner earns {formatPrice(offer.ownerShare)}</span>
+                          {formatPrice(offer.price)} <span className="text-rust">· Includes {formatPrice(offer.ownerShare)} for the fabric&apos;s owner</span>
                         </p>
                       </div>
                     </div>
@@ -122,7 +122,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
             <section className="mt-8 rounded-feature bg-paper p-5 shadow-card">
               <p className="font-serif text-[20px] leading-[1.3] text-ink">{spokenFor ? "Fully spoken for." : "Too small for anything in our pattern book."}</p>
               <p className="mt-2 text-[16px] leading-[1.63] text-body">
-                {spokenFor ? "Every cut from this piece has been ordered." : "None of our products fit in what is left of this piece."}
+                {spokenFor ? "Every cut from this offcut has been ordered." : "None of our products fit in what is left of this offcut."}
               </p>
               <Link href="/shop" className="mt-4 inline-flex rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
                 See what else is on the table

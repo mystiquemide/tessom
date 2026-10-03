@@ -200,18 +200,23 @@ export function planningFacts(remnant: ShopRemnant): string[] {
   const facts = [`${remnant.widthCm} × ${remnant.heightCm} cm of ${remnant.fabricName}${remnant.maker ? ` from ${remnant.maker}` : ""}.`];
   facts.push(
     remnant.directional
-      ? "This fabric has a direction, so every piece is cut the same way up. Nothing is turned."
-      : "This fabric has no direction, so pieces can be turned to fit.",
+      ? "This fabric has a direction, so every panel is cut the same way up. Nothing is turned."
+      : "This fabric has no direction, so panels can be turned to fit.",
   );
   if (remnant.repeat) {
     const parts = [remnant.repeat.vCm ? `${remnant.repeat.vCm} cm down` : null, remnant.repeat.hCm ? `${remnant.repeat.hCm} cm across` : null].filter(Boolean);
-    facts.push(`The pattern repeats every ${parts.join(" and ")}. Pieces are placed to line up with it.`);
+    facts.push(`The pattern repeats every ${parts.join(" and ")}. Panels are placed to line up with it.`);
   }
   if (remnant.defects.length > 0) {
-    facts.push(`${remnant.defects.length === 1 ? "One flaw is" : `${remnant.defects.length} flaws are`} hatched on the plan. No piece is cut over a flaw.`);
+    facts.push(`${remnant.defects.length === 1 ? "One flaw is" : `${remnant.defects.length} flaws are`} hatched on the plan. No panel is cut over a flaw.`);
   }
   if (remnant.allocations.length > 0) {
     facts.push(`${remnant.allocations.length === 1 ? "One area is" : `${remnant.allocations.length} areas are`} already ordered and shown darkened.`);
   }
   return facts;
+}
+
+/** "1 cut to choose from", "4 cuts to choose from". */
+export function cutsLabel(count: number): string {
+  return `${count} ${count === 1 ? "cut" : "cuts"} to choose from`;
 }

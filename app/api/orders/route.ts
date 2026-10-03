@@ -304,12 +304,12 @@ function responseForError(error: unknown): NextResponse {
     );
   }
   if (error instanceof WorkflowPreparationError) {
-    return jsonResponse({error: "The order workflow could not be prepared", retryable: true}, 503);
+    return jsonResponse({error: "We couldn't place the order. Try again.", retryable: true}, 503);
   }
   if (error instanceof WorkflowAllocationError) {
     return jsonResponse(
       {
-        error: "The order was saved but workflow activation is pending",
+        error: "Your order was received and is being finalised.",
         orderId: error.orderId,
         workflowInstanceId: error.workflowInstanceId,
         recoveryRequired: error.recoveryRequired,

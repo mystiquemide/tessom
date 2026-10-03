@@ -19,7 +19,7 @@ describe("ErrorView", () => {
   it("reassures, and offers a retry and a way out", () => {
     const html = renderToStaticMarkup(createElement(ErrorView, { reset: () => undefined }));
     expect(html).toContain("Something went wrong on our side.");
-    expect(html).toContain("Nothing was ordered or changed.");
+    expect(html).toContain("Nothing was ordered or changed by this error.");
     expect(html).toContain("Try again");
     expect(html).toContain('href="/shop"');
   });

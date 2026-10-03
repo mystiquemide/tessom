@@ -12,7 +12,7 @@ function ConsentPill() {
         <circle cx="8" cy="8" r="8" fill="#10756a" />
         <path d="M4.5 8.3l2.2 2.2 4.8-4.9" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      Consent granted
+      Owner approved
     </span>
   );
 }
@@ -28,7 +28,7 @@ function HeroCard({remnant, tilt}: {remnant: ShopRemnant; tilt: string}) {
             widthCm={remnant.widthCm}
             heightCm={remnant.heightCm}
             photoUrl={remnant.photoUrl}
-            ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres, ${remnant.offers.length} offers drawn on the fabric`}
+            ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres, ${remnant.offers.length === 1 ? "1 cut" : `${remnant.offers.length} cuts`} drawn on the fabric`}
             defects={remnant.defects}
             allocations={remnant.allocations}
             offers={remnant.offers}
@@ -44,7 +44,7 @@ function HeroCard({remnant, tilt}: {remnant: ShopRemnant; tilt: string}) {
           {price !== null && <p className="font-mono text-[14px] text-ink">from {formatPrice(price)}</p>}
         </div>
         <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">
-          {remnant.widthCm} × {remnant.heightCm} cm · {remnant.offers.length} {remnant.offers.length === 1 ? "offer" : "offers"}
+          {remnant.widthCm} × {remnant.heightCm} cm · {remnant.offers.length} {remnant.offers.length === 1 ? "cut" : "cuts"}
         </p>
       </article>
     </Link>

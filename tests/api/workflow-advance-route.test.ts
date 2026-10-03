@@ -185,14 +185,14 @@ describe("POST /api/workflow/advance", () => {
     delete process.env.WORKSHOP_PIN;
     const unavailable = await POST(request({action: "grant", remnantId: "remnant-1"}));
     expect(unavailable.status).toBe(503);
-    expect(await json(unavailable)).toEqual({error: "Workflow service is unavailable"});
+    expect(await json(unavailable)).toEqual({error: "Service unavailable"});
   });
 
   it("returns unavailable for a weak configured PIN", async () => {
     process.env.WORKSHOP_PIN = "short";
     const response = await POST(request({action: "grant", remnantId: "remnant-1"}));
     expect(response.status).toBe(503);
-    expect(await json(response)).toEqual({error: "Workflow service is unavailable"});
+    expect(await json(response)).toEqual({error: "Service unavailable"});
   });
 
   it("rejects arbitrary activity and action pairs", async () => {
@@ -264,7 +264,7 @@ describe("POST /api/workflow/advance", () => {
     mockedFetchConsent.mockResolvedValueOnce(consentState({workflow: null}));
     const missingWorkflow = await POST(request({action: "grant", remnantId: "remnant-1"}));
     expect(missingWorkflow.status).toBe(503);
-    expect(await json(missingWorkflow)).toEqual({error: "Workflow service is unavailable"});
+    expect(await json(missingWorkflow)).toEqual({error: "Service unavailable"});
   });
 
   it("rejects consent cross-actions and impossible stage/status pairs before mutating", async () => {
@@ -683,7 +683,7 @@ describe("POST /api/workflow/advance", () => {
     const body = await json(response);
 
     expect(response.status).toBe(500);
-    expect(body).toEqual({error: "Unable to advance workflow"});
+    expect(body).toEqual({error: "Something went wrong. Try again."});
     expect(JSON.stringify(body)).not.toContain("secret");
   });
 });

@@ -47,7 +47,7 @@ describe("ShopGrid", () => {
     expect(html).toContain("Totes");
     expect(html).toContain("Cushions");
     expect(html.match(/<article/g)).toHaveLength(4);
-    expect(html).toContain("Part of this piece is sold");
+    expect(html).toContain("Part of this offcut is sold");
     expect(html).toContain("Too small for anything in our pattern book.");
   });
 
@@ -55,7 +55,7 @@ describe("ShopGrid", () => {
     const html = renderToStaticMarkup(createElement(ShopGrid, { remnants: [e], allRemnants: [e], kind: null }));
     expect(html).toContain("Fully spoken for");
     expect(html).not.toContain("Too small");
-    expect(html).not.toContain("0 offers");
+    expect(html).not.toContain("· 0 cuts");
   });
 
   it("marks the active chip", () => {
