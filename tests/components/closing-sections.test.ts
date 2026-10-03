@@ -6,11 +6,11 @@ import { BuiltOn } from "../../components/built-on";
 import { ClosingCta } from "../../components/closing-cta";
 
 describe("BuiltOn", () => {
-  it("names only what the product is built on, with real logo files", () => {
+  it("names Sanity with its real logo file and nothing else", () => {
     const html = renderToStaticMarkup(createElement(BuiltOn));
-    for (const name of ["Sanity", "Next.js", "Unsplash"]) expect(html).toContain(name);
-    for (const file of ["sanity.svg", "nextdotjs.svg", "unsplash.svg"]) expect(html).toContain(file);
-    expect(html).not.toContain("Vercel");
+    expect(html).toContain("Sanity");
+    expect(html).toContain("sanity.svg");
+    for (const other of ["Next.js", "Unsplash", "Vercel"]) expect(html).not.toContain(other);
   });
 });
 

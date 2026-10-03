@@ -1,13 +1,12 @@
 import Link from "next/link";
 
 import {availableKinds, fetchShopRemnants, KIND_LABELS} from "../lib/shop";
-import {fetchPhotoCredits} from "../lib/sanity/public";
 import {Logo} from "./logo";
 
 const linkClass = "text-ink underline-offset-[6px] hover:underline";
 
 export async function SiteFooter() {
-  const [credits, remnants] = await Promise.all([fetchPhotoCredits(), fetchShopRemnants()]);
+  const remnants = await fetchShopRemnants();
   const kinds = availableKinds(remnants);
 
   return (
@@ -64,20 +63,6 @@ export async function SiteFooter() {
           </nav>
         </div>
 
-        {credits.length > 0 && (
-          <div className="mt-10 border-t border-rule pt-6">
-            <p className="font-mono text-[12px] uppercase tracking-wide text-muted">Photography on Unsplash</p>
-            <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[12px] leading-[1.5] text-body">
-              {credits.map((credit) => (
-                <li key={credit.url}>
-                  <a href={credit.url} rel="noopener noreferrer" className="underline-offset-2 hover:underline">
-                    {credit.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
     </footer>
   );
