@@ -68,7 +68,7 @@ export function CutPlan({
     <div
       role="img"
       aria-label={ariaLabel}
-      className={`relative w-full overflow-hidden rounded-card bg-recessed shadow-card ${className}`}
+      className={`relative w-full overflow-hidden rounded-card bg-recessed ${className}`}
       style={{aspectRatio: `${widthCm} / ${heightCm}`}}
     >
       <svg
