@@ -26,7 +26,7 @@ export async function SiteFooter() {
               <ul className="mt-3 space-y-2 text-[14px]">
                 {kinds.map((entry) => (
                   <li key={entry.kind}>
-                    <Link href={`/?kind=${entry.kind}#shop`} className={linkClass}>
+                    <Link href={`/shop?kind=${entry.kind}`} className={linkClass}>
                       {KIND_LABELS[entry.kind]}
                     </Link>
                   </li>
@@ -44,7 +44,7 @@ export async function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/#shop" className={linkClass}>
+                <Link href="/shop" className={linkClass}>
                   On the table now
                 </Link>
               </li>

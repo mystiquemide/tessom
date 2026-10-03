@@ -17,7 +17,7 @@ describe("BuiltOn", () => {
 describe("ClosingCta", () => {
   it("has one call to action that goes to the shop", () => {
     const html = renderToStaticMarkup(createElement(ClosingCta));
-    expect(html).toContain('href="/#shop"');
+    expect(html).toContain('href="/shop"');
     expect(html.match(/<a /g)).toHaveLength(1);
   });
 });

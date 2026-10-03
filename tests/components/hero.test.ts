@@ -27,7 +27,7 @@ describe("Hero", () => {
   it("shows the headline, the call to action and one card per remnant", () => {
     const html = renderToStaticMarkup(createElement(Hero, { remnants: [remnant] }));
     expect(html).toContain("Every offcut has a next piece.");
-    expect(html).toContain('href="#shop"');
+    expect(html).toContain('href="/shop"');
     expect(html).toContain("Teal Trellis");
     expect(html).toContain("from $85.55");
     expect(html).toContain("160 × 100 cm");

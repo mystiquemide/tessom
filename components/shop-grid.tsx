@@ -47,22 +47,21 @@ export function ShopGrid({remnants, allRemnants, kind}: {remnants: readonly Shop
   const shelf = shelfOrder(remnants);
 
   return (
-    <section id="shop" className="mx-auto max-w-page scroll-mt-6 px-6 pt-20">
+    <section id="shop" className="mx-auto max-w-page px-6 pt-16 sm:pt-20">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-[clamp(28px,4.4vw,36px)] leading-[1.31] text-ink">On the table right now.</h2>
+        <h1 className="text-[clamp(32px,5vw,44px)] leading-[1.25] text-ink">On the table right now.</h1>
         <p className="mt-3 text-[16px] leading-[1.63] text-body">Each piece is one of one. Order a cut and the fabric it uses is gone.</p>
       </div>
 
       {kinds.length > 0 && (
         <nav aria-label="Filter by item" className="mt-8 flex flex-wrap justify-center gap-2">
-          <Link href="/#shop" scroll={false} aria-current={kind === null ? "page" : undefined} className={chipClass(kind === null)}>
+          <Link href="/shop" aria-current={kind === null ? "page" : undefined} className={chipClass(kind === null)}>
             All
           </Link>
           {kinds.map((entry) => (
             <Link
               key={entry.kind}
-              href={`/?kind=${entry.kind}#shop`}
-              scroll={false}
+              href={`/shop?kind=${entry.kind}`}
               aria-current={kind === entry.kind ? "page" : undefined}
               className={chipClass(kind === entry.kind)}
             >
@@ -82,7 +81,7 @@ export function ShopGrid({remnants, allRemnants, kind}: {remnants: readonly Shop
         <div className="mx-auto mt-12 max-w-md text-center">
           <p className="font-serif text-[20px] text-ink">{kind === null ? "No pieces on the table right now." : "Nothing on the table fits that yet."}</p>
           {kind !== null && (
-            <Link href="/#shop" scroll={false} className="mt-4 inline-flex rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+            <Link href="/shop" className="mt-4 inline-flex rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
               See everything
             </Link>
           )}

@@ -8,7 +8,7 @@ export function ClosingCta() {
         <p className="mx-auto mt-3 max-w-[560px] text-[16px] leading-[1.63] text-body">
           Premium fabric, cut once, for one buyer. When a piece is gone, it is gone.
         </p>
-        <Link href="/#shop" className="mt-8 inline-flex items-center gap-2 rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+        <Link href="/shop" className="mt-8 inline-flex items-center gap-2 rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
           Browse pieces
           <span aria-hidden="true" className="opacity-60">
             →

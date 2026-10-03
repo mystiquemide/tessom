@@ -3,7 +3,7 @@ import Link from "next/link";
 import {Logo} from "./logo";
 
 const LINKS = [
-  {href: "/#shop", label: "Shop"},
+  {href: "/shop", label: "Shop"},
   {href: "/#how", label: "How it works"},
 ];
 
@@ -23,7 +23,7 @@ export function SiteNav() {
               {link.label}
             </Link>
           ))}
-          <Link href="/#shop" className="rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+          <Link href="/shop" className="rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
             Browse pieces
           </Link>
         </nav>

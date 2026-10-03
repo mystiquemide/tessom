@@ -60,7 +60,7 @@ export function Hero({remnants}: {remnants: readonly ShopRemnant[]}) {
           Premium upholstery fabric, cut into one-off cushions, pads and totes from what the workshop had left.
         </p>
         <Link
-          href="#shop"
+          href="/shop"
           className="mt-8 inline-flex items-center gap-2 rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper"
         >
           Browse pieces
