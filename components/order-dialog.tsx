@@ -87,7 +87,9 @@ export function OrderDialog({
       setPhase({
         name: "error",
         message:
-          response.status === 400
+          response.status === 429
+            ? "Too many orders from this connection. Try again in a few minutes."
+            : response.status === 400
             ? "That didn't go through. Check your name and email and try again."
             : "We couldn't confirm your order. Try again and we won't place it twice.",
       });

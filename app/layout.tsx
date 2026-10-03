@@ -10,10 +10,12 @@ const jetbrains = JetBrains_Mono({subsets: ["latin"], variable: "--font-jetbrain
 
 export const revalidate = 3600;
 
+import {siteUrl} from "../lib/site";
+
 const DESCRIPTION = "Premium upholstery fabric, cut into one-off cushions, pads and totes from what the workshop had left.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || "http://localhost:3000"),
+  metadataBase: new URL(siteUrl()),
   title: "Tessom",
   description: DESCRIPTION,
   openGraph: {title: "Tessom. Every offcut has a next piece.", description: DESCRIPTION, siteName: "Tessom", type: "website"},
