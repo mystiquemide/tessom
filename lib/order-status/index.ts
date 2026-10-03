@@ -3,7 +3,7 @@ import type {SanityReadClient} from "../sanity/client";
 import {sanityImageUrl, type SanityImageSource} from "../sanity/image";
 import {orderColumn} from "../workshop/board";
 
-export const ORDER_STEPS = ["Allocated", "Cut", "Sewn", "Shipped"] as const;
+export const ORDER_STEPS = ["Reserved", "Cut", "Sewn", "Shipped"] as const;
 export type OrderStep = (typeof ORDER_STEPS)[number];
 
 export const ORDER_STATUS_QUERY = `*[_type == "order" && _id == $id][0]{
@@ -43,7 +43,7 @@ export interface OrderStatus {
   step: OrderStep;
 }
 
-const STEP_BY_COLUMN: Record<string, OrderStep> = {allocated: "Allocated", cut: "Cut", sewn: "Sewn", shipped: "Shipped"};
+const STEP_BY_COLUMN: Record<string, OrderStep> = {allocated: "Reserved", cut: "Cut", sewn: "Sewn", shipped: "Shipped"};
 
 export function buildOrderStatus(raw: RawOrderStatus | null | undefined): OrderStatus | null {
   if (!raw || !raw.widthCm || !raw.heightCm) return null;

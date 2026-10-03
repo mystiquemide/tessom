@@ -37,7 +37,9 @@ export function OrderDialog({
   const keyRef = useRef<string>("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [touched, setTouched] = useState({name: false, email: false});
   const [phase, setPhase] = useState<Phase>({name: "form"});
+  const [linkCopied, setLinkCopied] = useState(false);
   const changed = useRef(false);
 
   useEffect(() => {
@@ -46,7 +48,12 @@ export function OrderDialog({
     if (dialog && !dialog.open) dialog.showModal();
   }, []);
 
-  const valid = name.trim().length > 0 && EMAIL.test(email.trim());
+  const nameOk = name.trim().length > 0;
+  const emailOk = EMAIL.test(email.trim());
+  const valid = nameOk && emailOk;
+  const nameHint = touched.name && !nameOk ? "Add your name." : null;
+  const emailHint = touched.email && !emailOk ? "Enter an email like name@example.com." : null;
+  const orderNumber = phase.name === "success" ? phase.orderId.replace(/^orders\./, "") : "";
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -81,11 +88,11 @@ export function OrderDialog({
         name: "error",
         message:
           response.status === 400
-            ? "Check your name and email, then try again."
+            ? "That didn't go through. Check your name and email and try again."
             : "We couldn't confirm your order. Try again and we won't place it twice.",
       });
     } catch {
-      setPhase({name: "error", message: "We couldn't reach the workshop. Try again and we won't place it twice."});
+      setPhase({name: "error", message: "We couldn't connect. Try again. Your order won't be placed twice."});
     }
   }
 
@@ -109,16 +116,18 @@ export function OrderDialog({
               {offer.name} from {remnant.title}. {describeOfferPieces(offer, ", ")}.
             </p>
             <p className="mt-3 font-mono text-[14px] text-ink">
-              {formatPrice(offer.price)} <span className="text-rust">· Owner earns {formatPrice(offer.ownerShare)}</span>
+              {formatPrice(offer.price)} <span className="text-rust">· Includes {formatPrice(offer.ownerShare)} for the fabric&apos;s owner</span>
             </p>
 
             <label className="mt-6 block text-[14px] font-semibold text-ink">
               Your name
-              <input className={inputClass} name="name" autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} maxLength={160} required />
+              <input className={inputClass} name="name" autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} onBlur={() => setTouched((current) => ({...current, name: true}))} maxLength={160} required aria-invalid={nameHint ? true : undefined} aria-describedby={nameHint ? "name-hint" : undefined} />
+              {nameHint && <span id="name-hint" className="mt-1 block text-[14px] font-normal leading-[1.71] text-ink">{nameHint}</span>}
             </label>
             <label className="mt-4 block text-[14px] font-semibold text-ink">
               Email
-              <input className={inputClass} name="email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} maxLength={320} required />
+              <input className={inputClass} name="email" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} onBlur={() => setTouched((current) => ({...current, email: true}))} maxLength={320} required aria-invalid={emailHint ? true : undefined} aria-describedby={emailHint ? "email-hint" : undefined} />
+              {emailHint && <span id="email-hint" className="mt-1 block text-[14px] font-normal leading-[1.71] text-ink">{emailHint}</span>}
             </label>
 
             {phase.name === "error" && (
@@ -127,7 +136,7 @@ export function OrderDialog({
               </p>
             )}
 
-            <p className="mt-4 text-[14px] leading-[1.71] text-body">This reserves the cut. The workshop emails you to arrange payment and shipping.</p>
+            <p className="mt-4 text-[14px] leading-[1.71] text-body">This reserves the cut. The workshop will contact you at this email to arrange payment and shipping. You pay nothing now.</p>
 
             <div className="mt-6 flex items-center gap-3">
               <button
@@ -135,7 +144,7 @@ export function OrderDialog({
                 disabled={!valid || phase.name === "pending"}
                 className="rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper disabled:cursor-not-allowed disabled:bg-warm-gray"
               >
-                {phase.name === "pending" ? <span className="font-mono text-[14px] font-normal">Locking the cut…</span> : phase.name === "error" ? "Try again" : "Place order"}
+                {phase.name === "pending" ? <span className="font-mono text-[14px] font-normal">Reserving your cut…</span> : phase.name === "error" ? "Try again" : "Place order"}
               </button>
               <button
                 type="button"
@@ -156,18 +165,33 @@ export function OrderDialog({
                 <circle cx="8" cy="8" r="8" fill="#10756a" />
                 <path d="M4.5 8.3l2.2 2.2 4.8-4.9" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              Allocated
+              Reserved
             </span>
             <h2 id="order-title" className="mt-4 text-[28px] leading-[1.31] text-ink">
-              Your cut is locked.
+              Your cut is reserved.
             </h2>
             <p className="mt-2 text-[16px] leading-[1.63] text-body">
-              {offer.name} from {remnant.title} is yours. The workshop will email {email.trim()} to arrange payment and shipping.
+              {offer.name} from {remnant.title} is yours. The workshop will contact you at {email.trim()} to arrange payment and shipping. You pay nothing now.
             </p>
-            <p className="mt-3 font-mono text-[14px] text-muted">Order {phase.orderId}</p>
+            <p className="mt-3 font-mono text-[14px] text-muted">Order number: {orderNumber}</p>
+            <p className="mt-3 text-[16px] leading-[1.63] text-body">Save this link to check your order.</p>
             <div className="mt-6 flex items-center gap-4">
               <button type="button" onClick={() => dialogRef.current?.close()} className="rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
                 Done
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(`${window.location.origin}/order/${encodeURIComponent(phase.orderId)}`);
+                    setLinkCopied(true);
+                  } catch {
+                    // Clipboard can be blocked. The tracking link below still works.
+                  }
+                }}
+                className="text-[16px] text-ink underline-offset-[6px] hover:underline"
+              >
+                {linkCopied ? "Link copied" : "Copy order link"}
               </button>
               <a href={`/order/${encodeURIComponent(phase.orderId)}`} className="text-[16px] text-ink underline-offset-[6px] hover:underline">
                 Track this order

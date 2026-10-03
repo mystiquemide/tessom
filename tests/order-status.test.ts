@@ -19,11 +19,11 @@ const raw = {
 
 describe("buildOrderStatus", () => {
   it("maps the workflow stage to a buyer-facing step", () => {
-    expect(buildOrderStatus({ ...raw, stage: "allocated" })!.step).toBe("Allocated");
+    expect(buildOrderStatus({ ...raw, stage: "allocated" })!.step).toBe("Reserved");
     expect(buildOrderStatus({ ...raw, stage: "cut" })!.step).toBe("Cut");
     expect(buildOrderStatus({ ...raw, stage: "sewn" })!.step).toBe("Sewn");
     expect(buildOrderStatus({ ...raw, stage: "sold-out" })!.step).toBe("Shipped");
-    expect(buildOrderStatus({ ...raw, stage: null })!.step).toBe("Allocated");
+    expect(buildOrderStatus({ ...raw, stage: null })!.step).toBe("Reserved");
   });
 
   it("keeps only what the buyer may see, never contact details", () => {
@@ -45,17 +45,17 @@ describe("OrderStatusView", () => {
   it("shows the order, the steps with the current one marked, and a plain message", () => {
     const html = renderToStaticMarkup(createElement(OrderStatusView, { order }));
     expect(html).toContain("Your order");
-    expect(html).toContain("orders.abc123");
+    expect(html).toContain("Order number: abc123");
     expect(html).toContain("Square Cushion from Sage Crepe");
     expect(html).toContain("$113.14");
-    for (const step of ["Allocated", "Cut", "Sewn", "Shipped"]) expect(html).toContain(step);
+    for (const step of ["Reserved", "Cut", "Sewn", "Shipped"]) expect(html).toContain(step);
     expect(html.match(/aria-current="step"/g)).toHaveLength(1);
     expect(html).toContain("Your pieces are cut.");
   });
 
-  it("promises the workshop email only while the order is allocated", () => {
+  it("promises the workshop contact only while the order is reserved", () => {
     const allocated = renderToStaticMarkup(createElement(OrderStatusView, { order: buildOrderStatus({ ...raw, stage: "allocated" })! }));
-    expect(allocated).toContain("The workshop emails you to arrange payment and shipping.");
-    expect(renderToStaticMarkup(createElement(OrderStatusView, { order }))).not.toContain("workshop emails you");
+    expect(allocated).toContain("The workshop will contact you at the email you gave to arrange payment and shipping. You pay nothing now.");
+    expect(renderToStaticMarkup(createElement(OrderStatusView, { order }))).not.toContain("will contact you at the email you gave");
   });
 });

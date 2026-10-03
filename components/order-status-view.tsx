@@ -5,10 +5,10 @@ import {formatPrice} from "../lib/shop";
 import {CutPlan} from "./cut-plan";
 
 const MESSAGES: Record<OrderStatus["step"], string> = {
-  Allocated: "Your cut is locked. The workshop emails you to arrange payment and shipping.",
+  Reserved: "Your cut is reserved. The workshop will contact you at the email you gave to arrange payment and shipping. You pay nothing now.",
   Cut: "Your pieces are cut.",
   Sewn: "Your order is sewn and nearly on its way.",
-  Shipped: "Your order has shipped.",
+  Shipped: "Your order has shipped. The workshop will send delivery details to your email.",
 };
 
 export function OrderStatusView({order}: {order: OrderStatus}) {
@@ -26,18 +26,18 @@ export function OrderStatusView({order}: {order: OrderStatus}) {
               widthCm={order.widthCm}
               heightCm={order.heightCm}
               photoUrl={order.photoUrl}
-              ariaLabel={`${order.title}, ${order.widthCm} by ${order.heightCm} centimetres. The darkened areas are your pieces.`}
+              ariaLabel={`${order.title}, ${order.widthCm} by ${order.heightCm} centimetres. The darkened areas are your panels.`}
               allocations={order.pieces}
               stampLabel="Yours"
               className="border border-charcoal/60"
             />
           </div>
-          <p className="mt-3 font-mono text-[12px] leading-[1.5] text-muted">The darkened areas are the pieces cut for you.</p>
+          <p className="mt-3 font-mono text-[12px] leading-[1.5] text-muted">The darkened areas are the panels cut for you.</p>
         </div>
 
         <div>
           <h1 className="text-[clamp(32px,5vw,44px)] leading-[1.25] text-ink">Your order</h1>
-          <p className="mt-2 break-all font-mono text-[14px] leading-[1.71] text-muted">{order.id}</p>
+          <p className="mt-2 break-all font-mono text-[14px] leading-[1.71] text-muted">Order number: {order.id.replace(/^orders\./, "")}</p>
           <p className="mt-6 font-serif text-[20px] font-medium leading-[1.3] text-ink">
             {order.productName} from {order.title}
           </p>
