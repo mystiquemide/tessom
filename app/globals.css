@@ -29,6 +29,7 @@
 
   --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-stamp: var(--font-stamp), ui-serif, Georgia, serif;
   --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --shadow-card: rgba(213, 208, 184, 0.4) 0px 2px 6px 0px;
