@@ -15,30 +15,32 @@ function ShopCard({remnant}: {remnant: ShopRemnant}) {
   const spokenFor = remnant.offers.length === 0 && remnant.allocations.length > 0;
   const tooSmall = remnant.offers.length === 0 && !spokenFor;
   return (
-    <article className="rounded-feature bg-paper p-5 shadow-card transition-shadow hover:shadow-lift">
-      <CutPlan
-        widthCm={remnant.widthCm}
-        heightCm={remnant.heightCm}
-        photoUrl={remnant.photoUrl}
-        ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres, ${remnant.offers.length} ways to cut it`}
-        defects={remnant.defects}
-        allocations={remnant.allocations}
-        offers={remnant.offers}
-        activeOfferId={remnant.offers[0]?.id ?? null}
-        className="border border-charcoal/60"
-      />
-      <div className="mt-4 flex items-baseline justify-between gap-3">
-        <h3 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{remnant.title}</h3>
-        {price !== null && <p className="shrink-0 font-mono text-[14px] text-ink">from {formatPrice(price)}</p>}
-      </div>
-      <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">
-        {remnant.widthCm} × {remnant.heightCm} cm
-        {remnant.offers.length === 0 ? "" : ` · ${remnant.offers.length} ${remnant.offers.length === 1 ? "offer" : "offers"}`}
-      </p>
-      {partlySold && <p className="mt-2 text-[14px] leading-[1.71] text-body">Part of this piece is sold. What&apos;s left is below.</p>}
-      {spokenFor && <p className="mt-2 text-[14px] leading-[1.71] text-body">Fully spoken for. Every cut from this piece has been ordered.</p>}
-      {tooSmall && <p className="mt-2 text-[14px] leading-[1.71] text-body">Too small for anything in our pattern book.</p>}
-    </article>
+    <Link href={`/r/${remnant.id}`} aria-label={`View ${remnant.title}`} className="block">
+      <article className="rounded-feature bg-paper p-5 shadow-card transition-shadow hover:shadow-lift">
+        <CutPlan
+          widthCm={remnant.widthCm}
+          heightCm={remnant.heightCm}
+          photoUrl={remnant.photoUrl}
+          ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres, ${remnant.offers.length} ways to cut it`}
+          defects={remnant.defects}
+          allocations={remnant.allocations}
+          offers={remnant.offers}
+          activeOfferId={remnant.offers[0]?.id ?? null}
+          className="border border-charcoal/60"
+        />
+        <div className="mt-4 flex items-baseline justify-between gap-3">
+          <h3 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{remnant.title}</h3>
+          {price !== null && <p className="shrink-0 font-mono text-[14px] text-ink">from {formatPrice(price)}</p>}
+        </div>
+        <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">
+          {remnant.widthCm} × {remnant.heightCm} cm
+          {remnant.offers.length === 0 ? "" : ` · ${remnant.offers.length} ${remnant.offers.length === 1 ? "offer" : "offers"}`}
+        </p>
+        {partlySold && <p className="mt-2 text-[14px] leading-[1.71] text-body">Part of this piece is sold. What&apos;s left is below.</p>}
+        {spokenFor && <p className="mt-2 text-[14px] leading-[1.71] text-body">Fully spoken for. Every cut from this piece has been ordered.</p>}
+        {tooSmall && <p className="mt-2 text-[14px] leading-[1.71] text-body">Too small for anything in our pattern book.</p>}
+      </article>
+    </Link>
   );
 }
 

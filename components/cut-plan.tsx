@@ -26,6 +26,8 @@ export interface CutPlanProps {
   /** Areas already sold. They are filled and stamped. */
   allocations?: readonly Rect[];
   offers?: readonly CutPlanOffer[];
+  /** Areas ordered just now. They fill in with a short animation. */
+  freshAllocations?: readonly Rect[];
   /** When set, this offer is drawn solid and the others fade back. */
   activeOfferId?: string | null;
   /** Piece labels. Auto shows them for the active offer, or when only one offer is drawn. */
@@ -52,6 +54,7 @@ export function CutPlan({
   defects = [],
   allocations = [],
   offers = [],
+  freshAllocations = [],
   activeOfferId = null,
   labels = "auto",
   className = "",
@@ -107,6 +110,10 @@ export function CutPlan({
 
         {allocations.map((area, index) => (
           <rect key={`sold-${index}`} x={area.x} y={area.y} width={area.w} height={area.h} fill="#000000" fillOpacity="0.6" />
+        ))}
+
+        {freshAllocations.map((area, index) => (
+          <rect key={`fresh-${index}`} className="fill-in" x={area.x} y={area.y} width={area.w} height={area.h} fill="#000000" fillOpacity="0.6" />
         ))}
 
         {offers.map((offer, offerIndex) => {

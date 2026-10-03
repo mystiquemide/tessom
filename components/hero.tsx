@@ -21,33 +21,33 @@ function HeroCard({remnant, tilt}: {remnant: ShopRemnant; tilt: string}) {
   const price = fromPrice(remnant);
   const first = remnant.offers[0];
   return (
-    <article
-      className={`w-full max-w-[420px] rounded-feature bg-paper p-5 shadow-card transition-shadow hover:shadow-lift md:-ml-4 md:first:ml-0 ${tilt}`}
-    >
-      <div className="relative">
-        <CutPlan
-          widthCm={remnant.widthCm}
-          heightCm={remnant.heightCm}
-          photoUrl={remnant.photoUrl}
-          ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres, ${remnant.offers.length} offers drawn on the fabric`}
-          defects={remnant.defects}
-          allocations={remnant.allocations}
-          offers={remnant.offers}
-          activeOfferId={first?.id ?? null}
-          className="border border-charcoal/60"
-        />
-        <div className="absolute bottom-3 left-3">
-          <ConsentPill />
+    <Link href={`/r/${remnant.id}`} aria-label={`View ${remnant.title}`} className={`block w-full max-w-[420px] md:-ml-4 md:first:ml-0 ${tilt}`}>
+      <article className="rounded-feature bg-paper p-5 shadow-card transition-shadow hover:shadow-lift">
+        <div className="relative">
+          <CutPlan
+            widthCm={remnant.widthCm}
+            heightCm={remnant.heightCm}
+            photoUrl={remnant.photoUrl}
+            ariaLabel={`${remnant.title}, ${remnant.widthCm} by ${remnant.heightCm} centimetres, ${remnant.offers.length} offers drawn on the fabric`}
+            defects={remnant.defects}
+            allocations={remnant.allocations}
+            offers={remnant.offers}
+            activeOfferId={first?.id ?? null}
+            className="border border-charcoal/60"
+          />
+          <div className="absolute bottom-3 left-3">
+            <ConsentPill />
+          </div>
         </div>
-      </div>
-      <div className="mt-4 flex items-baseline justify-between gap-3">
-        <h3 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{remnant.title}</h3>
-        {price !== null && <p className="font-mono text-[14px] text-ink">from {formatPrice(price)}</p>}
-      </div>
-      <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">
-        {remnant.widthCm} × {remnant.heightCm} cm · {remnant.offers.length} {remnant.offers.length === 1 ? "offer" : "offers"}
-      </p>
-    </article>
+        <div className="mt-4 flex items-baseline justify-between gap-3">
+          <h3 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{remnant.title}</h3>
+          {price !== null && <p className="font-mono text-[14px] text-ink">from {formatPrice(price)}</p>}
+        </div>
+        <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">
+          {remnant.widthCm} × {remnant.heightCm} cm · {remnant.offers.length} {remnant.offers.length === 1 ? "offer" : "offers"}
+        </p>
+      </article>
+    </Link>
   );
 }
 

@@ -81,6 +81,19 @@ h3 {
   outline-offset: 3px;
 }
 
+@keyframes fill-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fill-in {
+  animation: fill-in 700ms ease-out both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
