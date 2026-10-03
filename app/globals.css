@@ -1,34 +1,91 @@
 @import "tailwindcss";
 
 :root {
-  --chalk: #f6f3ec;
-  --thread: #1c1b19;
-  --mat: #2f5d50;
-  --chalkblue: #3b6ea5;
-  --rust: #b4532a;
+  --canvas: #fdfcf5;
   --paper: #ffffff;
+  --recessed: #f5f3e9;
+  --rule: #e5e2d0;
+  --ink: #000000;
+  --body: #4c4c4a;
+  --muted: #7f7e7b;
+  --teal: #10756a;
+  --stamp: #f42c2b;
+  --rust: #b4532a;
+  --cutline: #3b6ea5;
 }
 
 @theme inline {
-  --color-chalk: var(--chalk);
-  --color-thread: var(--thread);
-  --color-mat: var(--mat);
-  --color-chalkblue: var(--chalkblue);
-  --color-rust: var(--rust);
+  --color-canvas: var(--canvas);
   --color-paper: var(--paper);
+  --color-recessed: var(--recessed);
+  --color-rule: var(--rule);
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-teal: var(--teal);
+  --color-stamp: var(--stamp);
+  --color-rust: var(--rust);
+  --color-cutline: var(--cutline);
+
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-card: rgba(213, 208, 184, 0.4) 0px 2px 6px 0px;
+  --shadow-lift: rgba(213, 208, 184, 0.2) 0px 4px 12px 0px;
+  --shadow-press: rgba(213, 208, 184, 0.6) 0px 1px 2px 0px;
+  --shadow-hairline: rgba(213, 208, 184, 0.3) 0px 0px 0px 1px;
+
+  --radius-card: 8px;
+  --radius-feature: 24px;
+  --radius-button: 16px;
+  --radius-pill: 10000px;
+
+  --container-page: 1200px;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html,
-body {
-  min-height: 100%;
+html {
+  background: var(--canvas);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
-  background: var(--chalk);
-  color: var(--thread);
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.63;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: 450;
+  line-height: 1.31;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
