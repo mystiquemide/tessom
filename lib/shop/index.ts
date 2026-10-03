@@ -1,5 +1,6 @@
 import type {CutPlanPiece} from "../../components/cut-plan";
 import {computeOffers, describePieces, type ProductTemplate, type Rect, type Remnant} from "../offers";
+import {fingerprintOffer} from "../orders";
 import {DEFAULT_OFFER_RATES} from "../offers/rates";
 import {sanityImageUrl, type SanityImageSource} from "../sanity/image";
 import {createPublicReadClient} from "../sanity/public";
@@ -23,6 +24,9 @@ export interface ShopOffer {
   id: string;
   name: string;
   kind: string;
+  imageUrl: string | null;
+  /** Server fingerprint of this exact offer, sent back with an order so a stale offer is refused. */
+  fingerprint: string;
   price: number;
   ownerShare: number;
   pieces: CutPlanPiece[];
@@ -37,6 +41,7 @@ export interface ShopRemnant {
   widthCm: number;
   heightCm: number;
   directional: boolean;
+  repeat: {vCm?: number; hCm?: number} | null;
   photoUrl: string | null;
   defects: Rect[];
   allocations: Rect[];
@@ -52,7 +57,7 @@ interface RawRemnant extends Remnant {
 
 interface RawShopData {
   remnants: RawRemnant[];
-  templates: (ProductTemplate & {_id: string})[];
+  templates: (ProductTemplate & {_id: string; image?: SanityImageSource | null})[];
 }
 
 export const SHOP_QUERY = `{
@@ -66,7 +71,7 @@ export const SHOP_QUERY = `{
     photo
   },
   "templates": *[_type == "productTemplate" && active == true] | order(_id asc){
-    _id, name, kind, pieces[]{label, wCm, hCm, qty, centerPattern}, seamCm, labourMin, fillCost, active
+    _id, name, kind, pieces[]{label, wCm, hCm, qty, centerPattern}, seamCm, labourMin, fillCost, active, image
   }
 }`;
 
@@ -83,6 +88,8 @@ export function buildShopRemnants(data: RawShopData, photoWidth = 1200): ShopRem
         id: offer.templateId,
         name: template.name,
         kind: template.kind ?? "",
+        imageUrl: sanityImageUrl(template.image, 320),
+        fingerprint: fingerprintOffer(offer),
         price: offer.price,
         ownerShare: offer.ownerShare,
         pieces: offer.placement.map((placement, index) => ({...placement, ...described[index]})),
@@ -97,6 +104,7 @@ export function buildShopRemnants(data: RawShopData, photoWidth = 1200): ShopRem
       widthCm: remnant.widthCm,
       heightCm: remnant.heightCm,
       directional: remnant.directional === true,
+      repeat: remnant.repeat && (remnant.repeat.vCm || remnant.repeat.hCm) ? {vCm: remnant.repeat.vCm, hCm: remnant.repeat.hCm} : null,
       photoUrl: sanityImageUrl(remnant.photo, photoWidth),
       defects: remnant.defects ?? [],
       allocations: remnant.allocations ?? [],
@@ -171,4 +179,39 @@ export function availableKinds(remnants: readonly ShopRemnant[]): {kind: ShopKin
 export function shelfOrder(remnants: readonly ShopRemnant[]): ShopRemnant[] {
   const rank = (remnant: ShopRemnant): number => (remnant.status === "listed" && remnant.offers.length > 0 ? 0 : remnant.offers.length > 0 ? 1 : 2);
   return [...remnants].sort((a, b) => rank(a) - rank(b) || b.offers.length - a.offers.length || a.id.localeCompare(b.id));
+}
+
+export function findShopRemnant(remnants: readonly ShopRemnant[], id: string): ShopRemnant | undefined {
+  return remnants.find((remnant) => remnant.id === id);
+}
+
+/** "2 × Front 45×45 · Back 45×45", with identical pieces grouped. */
+export function describeOfferPieces(offer: ShopOffer, separator = " · "): string {
+  const counts = new Map<string, number>();
+  for (const piece of offer.pieces) {
+    const key = `${piece.label} ${piece.wCm}×${piece.hCm}`;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts].map(([key, count]) => (count > 1 ? `${count} × ${key}` : key)).join(separator);
+}
+
+/** Plain-language facts about how a remnant was planned. Only states what the data says. */
+export function planningFacts(remnant: ShopRemnant): string[] {
+  const facts = [`${remnant.widthCm} × ${remnant.heightCm} cm of ${remnant.fabricName}${remnant.maker ? ` from ${remnant.maker}` : ""}.`];
+  facts.push(
+    remnant.directional
+      ? "This fabric has a direction, so every piece is cut the same way up. Nothing is turned."
+      : "This fabric has no direction, so pieces can be turned to fit.",
+  );
+  if (remnant.repeat) {
+    const parts = [remnant.repeat.vCm ? `${remnant.repeat.vCm} cm down` : null, remnant.repeat.hCm ? `${remnant.repeat.hCm} cm across` : null].filter(Boolean);
+    facts.push(`The pattern repeats every ${parts.join(" and ")}. Pieces are placed to line up with it.`);
+  }
+  if (remnant.defects.length > 0) {
+    facts.push(`${remnant.defects.length === 1 ? "One flaw is" : `${remnant.defects.length} flaws are`} hatched on the plan. No piece is cut over a flaw.`);
+  }
+  if (remnant.allocations.length > 0) {
+    facts.push(`${remnant.allocations.length === 1 ? "One area is" : `${remnant.allocations.length} areas are`} already ordered and shown darkened.`);
+  }
+  return facts;
 }

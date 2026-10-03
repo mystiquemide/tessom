@@ -5,9 +5,9 @@ import { describe, expect, it } from "vitest";
 import { ShopGrid } from "../../components/shop-grid";
 import { availableKinds, filterByKind, isShopKind, shelfOrder, type ShopRemnant } from "../../lib/shop";
 
-const offer = (id: string, kind: string, price: number) => ({ id, name: id, kind, price, ownerShare: 1, pieces: [] });
+const offer = (id: string, kind: string, price: number) => ({ id, name: id, kind, imageUrl: null, fingerprint: "f", price, ownerShare: 1, pieces: [] });
 const remnant = (id: string, status: string, offers: ReturnType<typeof offer>[]): ShopRemnant => ({
-  id, title: `Fabric ${id}`, fabricName: id, maker: "", status, widthCm: 100, heightCm: 80, directional: false, photoUrl: null, defects: [], allocations: [], offers,
+  id, title: `Fabric ${id}`, fabricName: id, maker: "", status, widthCm: 100, heightCm: 80, directional: false, repeat: null, photoUrl: null, defects: [], allocations: [], offers,
 });
 
 const a = remnant("a", "listed", [offer("pad", "cushion", 50), offer("bag", "tote", 80)]);

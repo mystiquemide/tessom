@@ -6,8 +6,8 @@ import { Stats } from "../../components/stats";
 import { shopStats, type ShopRemnant } from "../../lib/shop";
 
 const remnant = (id: string, w: number, h: number, offers: number, status = "listed"): ShopRemnant => ({
-  id, title: id, fabricName: id, maker: "", status, widthCm: w, heightCm: h, directional: false, photoUrl: null, defects: [], allocations: [],
-  offers: Array.from({ length: offers }, (_, i) => ({ id: `${id}-${i}`, name: "x", kind: "cushion", price: 10, ownerShare: 1, pieces: [] })),
+  id, title: id, fabricName: id, maker: "", status, widthCm: w, heightCm: h, directional: false, repeat: null, photoUrl: null, defects: [], allocations: [],
+  offers: Array.from({ length: offers }, (_, i) => ({ id: `${id}-${i}`, name: "x", kind: "cushion", imageUrl: null, fingerprint: "f", price: 10, ownerShare: 1, pieces: [] })),
 });
 
 describe("shopStats", () => {
