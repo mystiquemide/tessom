@@ -46,6 +46,12 @@ export const productTemplate = defineType({
       validation: nonNegative,
     }),
     defineField({
+      name: 'image',
+      title: 'Example photo of the finished item',
+      type: 'image',
+      options: {hotspot: true},
+    }),
+    defineField({
       name: 'active',
       title: 'Active',
       type: 'boolean',
