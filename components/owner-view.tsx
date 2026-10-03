@@ -10,9 +10,10 @@ import {formatPrice} from "../lib/shop";
 
 type Decision = "grant" | "decline";
 
-function StagePill({remnant}: {remnant: OwnerRemnant}) {
+function StagePill({remnant, canDecide}: {remnant: OwnerRemnant; canDecide: boolean}) {
   const tone = remnant.awaitingConsent ? "text-rust" : remnant.stageLabel === "Listed" ? "text-teal" : "text-ink";
-  return <span className={`inline-flex rounded-pill bg-paper px-3 py-1 font-mono text-[14px] leading-[1.71] shadow-hairline ${tone}`}>{remnant.stageLabel}</span>;
+  const label = remnant.awaitingConsent ? (canDecide ? "Waiting for your decision" : "Waiting for the owner") : remnant.stageLabel;
+  return <span className={`inline-flex rounded-pill bg-paper px-3 py-1 font-mono text-[14px] leading-[1.71] shadow-hairline ${tone}`}>{label}</span>;
 }
 
 export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: string | null}) {
@@ -33,10 +34,10 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
         body: JSON.stringify({ownerId: owner.id, remnantId: remnant.id, decision, key: decisionKey}),
       });
       if (response.ok) {
-        setNotes((current) => ({...current, [remnant.id]: decision === "grant" ? "Consent granted. This piece is now listed." : "Declined. This piece goes back to the workshop."}));
+        setNotes((current) => ({...current, [remnant.id]: decision === "grant" ? "Approved. This offcut is now listed." : "Declined. This offcut goes back to the workshop."}));
         router.refresh();
       } else if (response.status === 409) {
-        setNotes((current) => ({...current, [remnant.id]: "This piece was already decided."}));
+        setNotes((current) => ({...current, [remnant.id]: "This offcut was already decided."}));
         router.refresh();
       } else if (response.status === 401) {
         setNotes((current) => ({...current, [remnant.id]: "This link is no longer valid. Ask the workshop for a new one."}));
@@ -69,11 +70,11 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
           <p className="font-serif text-[36px] leading-[1.31] text-rust">{formatPrice(owner.earned)}</p>
         </div>
       </div>
-      <p className="mt-2 text-[14px] leading-[1.71] text-body">Accrued from orders on this owner&apos;s pieces. No payments are made on this site.</p>
+      <p className="mt-2 text-[14px] leading-[1.71] text-body">Accrued from orders on this owner&apos;s offcuts. This site tracks what is owed. It does not make payments.</p>
 
       {decisionKey && waiting.length > 0 && (
         <p className="mt-6 rounded-feature bg-paper p-5 text-[16px] leading-[1.63] text-ink shadow-card">
-          {waiting.length === 1 ? "One piece is" : `${waiting.length} pieces are`} waiting for your decision. Nothing is listed until you say yes.
+          {waiting.length === 1 ? "One offcut is" : `${waiting.length} offcuts are`} waiting for your decision. Nothing is listed until you say yes.
         </p>
       )}
 
@@ -93,7 +94,7 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
               </div>
 
               <div className="flex flex-col items-start gap-3 sm:items-end">
-                <StagePill remnant={remnant} />
+                <StagePill remnant={remnant} canDecide={decisionKey !== null} />
                 {remnant.awaitingConsent && decisionKey && confirming !== remnant.id && (
                   <div className="flex items-center gap-3">
                     <button
@@ -102,7 +103,7 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
                       onClick={() => void decide(remnant, "grant")}
                       className="rounded-pill bg-ink px-4 py-2 text-[14px] font-semibold text-paper disabled:bg-warm-gray"
                     >
-                      {saving === remnant.id ? <span className="font-mono text-[12px] font-normal">Saving…</span> : "Grant consent"}
+                      {saving === remnant.id ? <span className="font-mono text-[12px] font-normal">Saving…</span> : "Approve and list"}
                     </button>
                     <button
                       type="button"
@@ -116,7 +117,7 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
                 )}
                 {remnant.awaitingConsent && decisionKey && confirming === remnant.id && (
                   <div role="group" aria-label={`Confirm declining ${remnant.title}`} className="max-w-xs text-[14px] leading-[1.71] text-ink sm:text-right">
-                    <p>Decline this piece? It goes back to the workshop and is not listed.</p>
+                    <p>Decline this offcut? It goes back to the workshop and is not listed.</p>
                     <div className="mt-2 flex items-center gap-3 sm:justify-end">
                       <button type="button" onClick={() => void decide(remnant, "decline")} className="rounded-pill bg-ink px-4 py-2 text-[14px] font-semibold text-paper">
                         Yes, decline
@@ -140,7 +141,7 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
           ))}
         </ul>
       ) : (
-        <p className="mt-8 rounded-feature bg-paper p-5 text-[16px] leading-[1.63] text-body shadow-card">No pieces from this owner yet.</p>
+        <p className="mt-8 rounded-feature bg-paper p-5 text-[16px] leading-[1.63] text-body shadow-card">No offcuts from this owner yet.</p>
       )}
     </main>
   );

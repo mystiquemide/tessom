@@ -22,7 +22,7 @@ function respond(body: unknown, status: number): NextResponse {
 /** Shows the workshop who ordered, so it can email them to arrange payment and shipping. PIN only. */
 export async function POST(request: Request): Promise<NextResponse> {
   const check = checkWorkshopPin(request.headers);
-  if (check === "unconfigured") return respond({error: "The workshop board is not set up on this server"}, 503);
+  if (check === "unconfigured") return respond({error: "The board is unavailable right now"}, 503);
   if (check === "unauthorized") return respond({error: "Unauthorized"}, 401);
 
   let orderId: string;

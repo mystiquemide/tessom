@@ -24,11 +24,11 @@ const data: RawOwners = {
 
 describe("stageLabel", () => {
   it("speaks in the owner's words", () => {
-    expect(stageLabel("intake", null, false)).toBe("Awaiting your consent");
-    expect(stageLabel("consented", null, false)).toBe("Awaiting your consent");
+    expect(stageLabel("intake", null, false)).toBe("Awaiting consent");
+    expect(stageLabel("consented", null, false)).toBe("Awaiting consent");
     expect(stageLabel("listed", null, false)).toBe("Listed");
-    expect(stageLabel("returned", null, false)).toBe("Consent declined");
-    expect(stageLabel("allocated", "allocated", true)).toBe("Allocated");
+    expect(stageLabel("returned", null, false)).toBe("Declined");
+    expect(stageLabel("allocated", "allocated", true)).toBe("Reserved");
     expect(stageLabel("allocated", "sewn", true)).toBe("Sewn");
     expect(stageLabel("sold-out", "sold-out", true)).toBe("Shipped");
     expect(stageLabel("sold-out", null, false)).toBe("Sold out");

@@ -27,7 +27,7 @@ export default async function OwnersPage() {
       <div className="mx-auto max-w-2xl text-center">
         <h1 className="text-[clamp(32px,5vw,44px)] leading-[1.25] text-ink">The people behind the fabric.</h1>
         <p className="mt-3 text-[16px] leading-[1.63] text-body">
-          Every offcut belongs to someone. Owners say yes before anything is listed, and earn a share of each cut. Earnings are accrued from orders, and no payments are made on this site.
+          Every offcut belongs to someone. Owners say yes before anything is listed, and earn a share of each cut. Earnings are tracked from orders. This site does not make payments.
         </p>
       </div>
 
@@ -41,7 +41,7 @@ export default async function OwnersPage() {
                 <h2 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{owner.name}</h2>
                 <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">{owner.kindLabel}</p>
                 <p className="mt-4 font-mono text-[14px] leading-[1.71] text-ink">
-                  {owner.remnants.length} {owner.remnants.length === 1 ? "piece" : "pieces"}
+                  {owner.remnants.length} {owner.remnants.length === 1 ? "offcut" : "offcuts"}
                   <span className="text-rust"> · earned {formatPrice(owner.earned)}</span>
                 </p>
               </Link>

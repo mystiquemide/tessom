@@ -40,13 +40,13 @@ export interface Owner {
   remnants: OwnerRemnant[];
 }
 
-const COLUMN_LABELS = {allocated: "Allocated", cut: "Cut", sewn: "Sewn", shipped: "Shipped"} as const;
+const COLUMN_LABELS = {allocated: "Reserved", cut: "Cut", sewn: "Sewn", shipped: "Shipped"} as const;
 
 /** Where a piece is in its life, in the owner's words. */
 export function stageLabel(status: string, latestOrderStage: string | null | undefined, hasOrder: boolean): string {
-  if (status === "intake" || status === "consented") return "Awaiting your consent";
+  if (status === "intake" || status === "consented") return "Awaiting consent";
   if (status === "listed") return "Listed";
-  if (status === "returned") return "Consent declined";
+  if (status === "returned") return "Declined";
   if (hasOrder) {
     const column = orderColumn(latestOrderStage);
     if (column in COLUMN_LABELS) return COLUMN_LABELS[column as keyof typeof COLUMN_LABELS];

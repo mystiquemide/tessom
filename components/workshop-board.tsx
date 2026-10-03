@@ -79,6 +79,7 @@ function CopyOwnerLink({path}: {path: string}) {
       >
         {state === "copied" ? "Link copied" : "Copy owner link"}
       </button>
+      <p className="mt-1 text-[12px] leading-[1.5] text-muted">Send this to the owner so they can approve or decline.</p>
       {state === "failed" && (
         <input readOnly value={url} onFocus={(event) => event.currentTarget.select()} aria-label="Owner link" className="mt-2 w-full rounded-[4px] border border-charcoal bg-paper px-2 py-1 font-mono text-[12px] text-ink" />
       )}
@@ -217,7 +218,7 @@ export function WorkshopBoard() {
         outcome.result === "unauthorized"
           ? "That PIN didn't work."
           : outcome.result === "unconfigured"
-            ? "The workshop board isn't set up on this server."
+            ? "The board is unavailable right now. Try again later."
             : "Couldn't reach the board. Try again in a moment.",
       );
     },
@@ -263,7 +264,7 @@ export function WorkshopBoard() {
       if (!response.ok) {
         setCardErrors((current) => ({
           ...current,
-          [card.id]: response.status === 409 ? "This order moved already. The board is refreshed." : "Couldn't move this order. Try again.",
+          [card.id]: response.status === 409 ? "This order was already moved. We've refreshed the board." : "Couldn't move this order. Try again.",
         }));
       }
       await refresh();

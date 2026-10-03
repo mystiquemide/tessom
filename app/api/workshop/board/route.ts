@@ -12,7 +12,7 @@ const NO_STORE = {"Cache-Control": "no-store"};
 
 export async function GET(request: Request): Promise<NextResponse> {
   const check = checkWorkshopPin(request.headers);
-  if (check === "unconfigured") return NextResponse.json({error: "The workshop board is not set up on this server"}, {status: 503, headers: NO_STORE});
+  if (check === "unconfigured") return NextResponse.json({error: "The board is unavailable right now"}, {status: 503, headers: NO_STORE});
   if (check === "unauthorized") return NextResponse.json({error: "Unauthorized"}, {status: 401, headers: NO_STORE});
   try {
     return NextResponse.json({columns: await fetchBoard(createSanityServerClient())}, {headers: NO_STORE});
