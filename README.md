@@ -23,6 +23,16 @@ Workshop PIN for the live site: `tessom-judges-2026`
 4. On the board, open the Awaiting consent column and press Copy owner link. Open it, and approve or decline the offcut. That is the Workflows consent stage.
 5. Query the live data yourself. See the two queries below.
 
+## Where to look for each judging criterion
+
+| Criterion | Where |
+|---|---|
+| App functionality | The 60-second flow above. Every step runs against the live Sanity project |
+| Schema thoughtfulness | [Schema](#schema) and [Why the schema looks like this](#why-the-schema-looks-like-this) |
+| Workflows bonus | [Workflow](#workflow). Consent, allocation and production are real stages, with an allocation guard |
+| Creativity | The cut plan: dashed panels drawn on the real fabric photo, with flaws kept clear |
+| Build process | [What broke, and how I fixed it](#what-broke-and-how-i-fixed-it), and the tests that pin each fix |
+
 ## How it works
 
 ```
@@ -61,6 +71,17 @@ Orders are not readable without a token:
 curl -s -G 'https://59g78icb.api.sanity.io/v2025-02-19/data/query/production' \
   --data-urlencode 'query=*[_type=="order"]'
 ```
+
+## Why the schema looks like this
+
+| Decision | Why |
+|---|---|
+| Allocations live on the remnant | What is sold has one source of truth. The offer engine reads it, and the order route writes it with the remnant's revision, so two buyers cannot both win |
+| Offers are computed on read, never stored | A stored offer can go stale the moment another order lands. Computing it means a sold area simply stops being offered |
+| Consent is a workflow stage, not a boolean | Whose permission a piece needs, and when it was given, is the Workflows story. It also means the shop cannot list an unconsented piece |
+| The workflow guard and the area lock check the same thing | Two sources of truth would disagree in front of a judge |
+| Orders use a private ID path and an encrypted contact | The dataset is public. The public API returns no orders, and the buyer's name and email are ciphertext |
+| The server recomputes every offer on order | The request carries only IDs and a fingerprint. Geometry and price are never taken from the client |
 
 ## Workflow
 
@@ -123,6 +144,18 @@ Browsing the shop needs no secrets. Orders, the workshop board and the owner pag
 | `ALLOW_PRODUCTION_SEED`, `ALLOW_DESTRUCTIVE_SEED` | Deliberate overrides the seed script requires |
 
 To set up your own project, run `npm run schema:deploy`, `npm run wf:deploy`, `npm run seed` and `npm run wf:bootstrap`.
+
+## What broke, and how I fixed it
+
+| What broke | How I found it | Fix |
+|---|---|---|
+| Fabric photo search returned ferns, CGI renders and real sand for fabric names | Reviewing contact sheets of every candidate | Renamed seven fabrics to match photos that really are textiles, instead of captioning a plant as a fabric |
+| A template with no `labourMin` or `fillCost` silently produced no offer | A test fixture failed in a way that looked like a geometry bug | The engine prices only complete templates. Fixtures now carry both fields |
+| The seed script does not delete orders or workflow instances | A reseed left old orders on the board | Remnants reference their orders, so the reset order matters: reseed first, then delete orders and instances, then rebuild the consent instances |
+| A global `margin: 0` on headings overrode Tailwind spacing | An error page's headline sat off-centre | Removed the rule. Unlayered CSS beats utility classes |
+| Adding loading skeletons made unknown pieces return HTTP 200 | Checking status codes after the change | Kept the skeletons. Those pages carry a noindex tag, and URLs that match no route still return 404 |
+| My own UX audit found muted text at 3.65 to 4.06:1 contrast, no `<main>` on two pages, no security headers and an unthrottled order endpoint | A full browser audit at two widths | Darkened the muted colour, one `<main>` per page, headers and CSP, rate limits on orders and wrong PINs. Re-ran the audit: zero contrast failures |
+| The first Vercel deploy failed with `No Output Directory named "dist"` | The build log | The build had passed. The project had no framework preset. Set it to Next.js and redeployed |
 
 ## Limitations
 
