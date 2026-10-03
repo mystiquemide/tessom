@@ -86,7 +86,77 @@ function CopyOwnerLink({path}: {path: string}) {
   );
 }
 
-function Card({card, busy, error, onAdvance}: {card: BoardCard; busy: boolean; error: string | undefined; onAdvance: (card: BoardCard) => void}) {
+function ContactReveal({orderId, pin}: {orderId: string; pin: string}) {
+  const [state, setState] = useState<{phase: "hidden"} | {phase: "loading"} | {phase: "shown"; name: string; email: string; copied: boolean} | {phase: "failed"}>({phase: "hidden"});
+
+  async function reveal() {
+    setState({phase: "loading"});
+    try {
+      const response = await fetch("/api/workshop/contact", {
+        method: "POST",
+        headers: {"content-type": "application/json", "x-workshop-pin": pin},
+        body: JSON.stringify({orderId}),
+      });
+      if (!response.ok) {
+        setState({phase: "failed"});
+        return;
+      }
+      const contact = (await response.json()) as {name: string; email: string};
+      setState({phase: "shown", name: contact.name, email: contact.email, copied: false});
+    } catch {
+      setState({phase: "failed"});
+    }
+  }
+
+  if (state.phase === "shown") {
+    const shown = state;
+    return (
+      <div className="mt-3 rounded-[4px] bg-recessed p-2 font-mono text-[12px] leading-[1.5] text-ink">
+        <p>{shown.name}</p>
+        <p className="break-all">{shown.email}</p>
+        <div className="mt-1 flex gap-3">
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(shown.email);
+                setState({...shown, copied: true});
+              } catch {
+                // Clipboard can be blocked. The email stays visible to copy by hand.
+              }
+            }}
+            className="underline-offset-[6px] hover:underline"
+          >
+            {shown.copied ? "Copied" : "Copy email"}
+          </button>
+          <button type="button" onClick={() => setState({phase: "hidden"})} className="underline-offset-[6px] hover:underline">
+            Hide
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        disabled={state.phase === "loading"}
+        onClick={() => void reveal()}
+        className="w-full rounded-pill bg-paper px-3 py-1.5 text-[14px] font-semibold text-ink shadow-hairline hover:shadow-card disabled:text-warm-gray"
+      >
+        {state.phase === "loading" ? "Opening…" : "Show contact"}
+      </button>
+      {state.phase === "failed" && (
+        <p role="alert" className="mt-2 text-[12px] leading-[1.5] text-ink">
+          Couldn&apos;t read this contact. Try again.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function Card({card, pin, busy, error, onAdvance}: {card: BoardCard; pin: string; busy: boolean; error: string | undefined; onAdvance: (card: BoardCard) => void}) {
   return (
     <li className="rounded-card bg-paper p-3 shadow-card">
       <div className="flex gap-2.5">
@@ -100,6 +170,7 @@ function Card({card, busy, error, onAdvance}: {card: BoardCard; busy: boolean; e
         <p className="mt-2 font-mono text-[12px] leading-[1.5] text-body">{card.details.join(" · ")}</p>
       )}
       {card.ownerLink && <CopyOwnerLink path={card.ownerLink} />}
+      {card.workflowInstanceId && <ContactReveal orderId={card.id} pin={pin} />}
       {card.action && (
         <button
           type="button"
@@ -242,7 +313,7 @@ export function WorkshopBoard() {
             {column.cards.length > 0 ? (
               <ul className="mt-3 space-y-3">
                 {column.cards.map((card) => (
-                  <Card key={card.id} card={card} busy={busyCard === card.id} error={cardErrors[card.id] || undefined} onAdvance={(c) => void advance(c)} />
+                  <Card key={card.id} card={card} pin={pin} busy={busyCard === card.id} error={cardErrors[card.id] || undefined} onAdvance={(c) => void advance(c)} />
                 ))}
               </ul>
             ) : (
