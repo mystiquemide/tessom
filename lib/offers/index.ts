@@ -418,6 +418,29 @@ function expandPieces(template: ProductTemplate): WorkPiece[] | undefined {
   });
 }
 
+export interface PieceDescription {
+  label: string;
+  /** Finished size in cm, without seam allowance. */
+  wCm: number;
+  hCm: number;
+}
+
+/**
+ * Describes each placement of an offer for the template that produced it.
+ * Placements come back in the same order as the template's expanded pieces,
+ * so index n of the result labels placement n.
+ */
+export function describePieces(template: ProductTemplate): PieceDescription[] | undefined {
+  const pieces = expandPieces(template);
+  if (!pieces) return undefined;
+  const seam = template.seamCm ?? 0;
+  return pieces.map((piece) => ({
+    label: piece.label,
+    wCm: normalizeNumber(piece.w - seam * 2),
+    hCm: normalizeNumber(piece.h - seam * 2),
+  }));
+}
+
 function snapAtOrAfter(value: number, repeat: number | undefined): number {
   if (!positive(repeat)) return value;
   const multiple = Math.ceil((value - EPSILON) / repeat);
