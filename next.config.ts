@@ -27,6 +27,15 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
   },
+  // The Vercel addresses serve the same site. Send them to the main domain so there is one canonical address.
+  async redirects() {
+    return ["tessom.vercel.app", "tessom-mide27145-3891s-projects.vercel.app"].map((host) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: host }],
+      destination: "https://tessom.midelabs.xyz/:path*",
+      permanent: true,
+    }));
+  },
   async headers() {
     return [
       { source: "/:path*", headers: SECURITY_HEADERS },
