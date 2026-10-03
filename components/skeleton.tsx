@@ -5,10 +5,12 @@ function Bar({className = ""}: {className?: string}) {
 
 function Frame({label, children}: {label: string; children: React.ReactNode}) {
   return (
-    <div role="status" aria-label={label}>
-      <span className="sr-only">{label}</span>
-      {children}
-    </div>
+    <main id="main">
+      <div role="status" aria-label={label}>
+        <span className="sr-only">{label}</span>
+        {children}
+      </div>
+    </main>
   );
 }
 

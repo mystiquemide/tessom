@@ -12,7 +12,7 @@ const LINKS = [
 
 const SHOP_HREF = "/shop";
 
-const linkClass = "text-ink underline-offset-[6px] decoration-1 hover:underline";
+const linkClass = "inline-flex min-h-11 items-center text-ink underline-offset-[6px] decoration-1 hover:underline";
 
 /** True when the page is this destination or one inside it. */
 export function isCurrent(pathname: string, href: string): boolean {
@@ -34,7 +34,7 @@ export function SiteNav() {
       </a>
       <header className="border-b border-rule bg-canvas">
         <div className="mx-auto flex h-16 max-w-page items-center justify-between px-6">
-          <Link href="/" aria-label="Tessom home">
+          <Link href="/" aria-label="Tessom home" className="inline-flex min-h-11 items-center">
             <Logo />
           </Link>
 
@@ -45,7 +45,7 @@ export function SiteNav() {
               </Link>
             ))}
             {showShop && (
-              <Link href={SHOP_HREF} className="rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+              <Link href={SHOP_HREF} className="inline-flex min-h-11 items-center rounded-pill bg-ink px-5 py-2.5 text-[16px] font-semibold text-paper">
                 Browse pieces
               </Link>
             )}
@@ -53,7 +53,7 @@ export function SiteNav() {
 
           {(links.length > 0 || showShop) && (
             <details className="group relative sm:hidden">
-              <summary className="flex h-10 cursor-pointer list-none items-center rounded-pill bg-ink px-4 text-[14px] font-semibold text-paper [&::-webkit-details-marker]:hidden">
+              <summary className="flex h-11 cursor-pointer list-none items-center rounded-pill bg-ink px-4 text-[14px] font-semibold text-paper [&::-webkit-details-marker]:hidden">
                 Menu
               </summary>
               <nav aria-label="Main" className="absolute right-0 top-12 z-10 flex w-56 flex-col rounded-card bg-paper p-2 shadow-card">

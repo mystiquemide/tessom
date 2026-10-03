@@ -22,7 +22,7 @@ async function loadBoard(pin: string): Promise<{result: LoadResult; columns?: Bo
 function PinGate({onUnlock, error, busy}: {onUnlock: (pin: string) => void; error: string | null; busy: boolean}) {
   const [value, setValue] = useState("");
   return (
-    <main className="mx-auto max-w-page px-6 pb-4 pt-16 sm:pt-24">
+    <main id="main" className="mx-auto max-w-page px-6 pb-4 pt-16 sm:pt-24">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -50,7 +50,7 @@ function PinGate({onUnlock, error, busy}: {onUnlock: (pin: string) => void; erro
         <button
           type="submit"
           disabled={!value.trim() || busy}
-          className="mt-6 rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper disabled:cursor-not-allowed disabled:bg-warm-gray"
+          className="mt-6 rounded-pill bg-ink px-5 py-2.5 text-[16px] font-semibold text-paper disabled:cursor-not-allowed disabled:bg-warm-gray"
         >
           {busy ? <span className="font-mono text-[14px] font-normal">Checking…</span> : "Open the board"}
         </button>
@@ -79,9 +79,9 @@ function CopyOwnerLink({path}: {path: string}) {
       >
         {state === "copied" ? "Link copied" : "Copy owner link"}
       </button>
-      <p className="mt-1 text-[12px] leading-[1.5] text-muted">Send this to the owner so they can approve or decline.</p>
+      <p className="mt-1 text-[13px] leading-[1.5] text-muted">Send this to the owner so they can approve or decline.</p>
       {state === "failed" && (
-        <input readOnly value={url} onFocus={(event) => event.currentTarget.select()} aria-label="Owner link" className="mt-2 w-full rounded-[4px] border border-charcoal bg-paper px-2 py-1 font-mono text-[12px] text-ink" />
+        <input readOnly value={url} onFocus={(event) => event.currentTarget.select()} aria-label="Owner link" className="mt-2 w-full rounded-[4px] border border-charcoal bg-paper px-2 py-1 font-mono text-[13px] text-ink" />
       )}
     </div>
   );
@@ -112,7 +112,7 @@ function ContactReveal({orderId, pin}: {orderId: string; pin: string}) {
   if (state.phase === "shown") {
     const shown = state;
     return (
-      <div className="mt-3 rounded-[4px] bg-recessed p-2 font-mono text-[12px] leading-[1.5] text-ink">
+      <div className="mt-3 rounded-[4px] bg-recessed p-2 font-mono text-[13px] leading-[1.5] text-ink">
         <p>{shown.name}</p>
         <p className="break-all">{shown.email}</p>
         <div className="mt-1 flex gap-3">
@@ -149,7 +149,7 @@ function ContactReveal({orderId, pin}: {orderId: string; pin: string}) {
         {state.phase === "loading" ? "Opening…" : "Show contact"}
       </button>
       {state.phase === "failed" && (
-        <p role="alert" className="mt-2 text-[12px] leading-[1.5] text-ink">
+        <p role="alert" className="mt-2 text-[13px] leading-[1.5] text-ink">
           Couldn&apos;t read this contact. Try again.
         </p>
       )}
@@ -164,11 +164,11 @@ function Card({card, pin, busy, error, onAdvance}: {card: BoardCard; pin: string
         {card.photoUrl && <Image src={card.photoUrl} alt="" width={40} height={40} loading="eager" className="size-10 shrink-0 rounded-[4px] bg-recessed object-cover" />}
         <div className="min-w-0">
           <h3 className="font-serif text-[16px] font-medium leading-[1.3] text-ink">{card.title}</h3>
-          <p className="mt-0.5 font-mono text-[12px] leading-[1.5] text-muted">{card.subtitle}</p>
+          <p className="mt-0.5 font-mono text-[13px] leading-[1.5] text-muted">{card.subtitle}</p>
         </div>
       </div>
       {card.details.length > 0 && (
-        <p className="mt-2 font-mono text-[12px] leading-[1.5] text-body">{card.details.join(" · ")}</p>
+        <p className="mt-2 font-mono text-[13px] leading-[1.5] text-body">{card.details.join(" · ")}</p>
       )}
       {card.ownerLink && <CopyOwnerLink path={card.ownerLink} />}
       {card.workflowInstanceId && <ContactReveal orderId={card.id} pin={pin} />}
@@ -179,11 +179,11 @@ function Card({card, pin, busy, error, onAdvance}: {card: BoardCard; pin: string
           onClick={() => onAdvance(card)}
           className="mt-3 w-full rounded-pill bg-ink px-3 py-1.5 text-[14px] font-semibold text-paper disabled:bg-warm-gray"
         >
-          {busy ? <span className="font-mono text-[12px] font-normal">Saving…</span> : card.action.label}
+          {busy ? <span className="font-mono text-[13px] font-normal">Saving…</span> : card.action.label}
         </button>
       )}
       {error && (
-        <p role="alert" className="mt-2 text-[12px] leading-[1.5] text-ink">
+        <p role="alert" className="mt-2 text-[13px] leading-[1.5] text-ink">
           {error}
         </p>
       )}
@@ -280,7 +280,7 @@ export function WorkshopBoard() {
   const total = columns.reduce((sum, column) => sum + column.cards.length, 0);
 
   return (
-    <main className="mx-auto max-w-[1440px] px-6 pb-4 pt-10">
+    <main id="main" className="mx-auto max-w-[1440px] px-6 pb-4 pt-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-[clamp(32px,5vw,44px)] leading-[1.25] text-ink">Workshop board</h1>
@@ -309,7 +309,7 @@ export function WorkshopBoard() {
           <section key={column.id} aria-labelledby={`col-${column.id}`} className="rounded-feature bg-recessed p-3">
             <h2 id={`col-${column.id}`} className="flex items-baseline justify-between px-1 font-serif text-[20px] font-medium leading-[1.3] text-ink">
               {column.title}
-              <span className="font-mono text-[12px] font-normal text-muted">{column.cards.length}</span>
+              <span className="font-mono text-[13px] font-normal text-muted">{column.cards.length}</span>
             </h2>
             {column.cards.length > 0 ? (
               <ul className="mt-3 space-y-3">

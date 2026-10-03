@@ -43,7 +43,7 @@ describe("shop filters", () => {
 describe("ShopGrid", () => {
   it("renders an anchor, chips and a card per remnant with honest notes", () => {
     const html = renderToStaticMarkup(createElement(ShopGrid, { remnants: all, allRemnants: all, kind: null }));
-    expect(html).toContain('id="shop"');
+    expect(html).toContain('id="main"');
     expect(html).toContain("Totes");
     expect(html).toContain("Cushions");
     expect(html.match(/<article/g)).toHaveLength(4);

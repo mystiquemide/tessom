@@ -144,7 +144,7 @@ export function OrderDialog({
               <button
                 type="submit"
                 disabled={!valid || phase.name === "pending"}
-                className="rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper disabled:cursor-not-allowed disabled:bg-warm-gray"
+                className="rounded-pill bg-ink px-5 py-2.5 text-[16px] font-semibold text-paper disabled:cursor-not-allowed disabled:bg-warm-gray"
               >
                 {phase.name === "pending" ? <span className="font-mono text-[14px] font-normal">Reserving your cut…</span> : phase.name === "error" ? "Try again" : "Place order"}
               </button>
@@ -152,7 +152,7 @@ export function OrderDialog({
                 type="button"
                 disabled={phase.name === "pending"}
                 onClick={() => dialogRef.current?.close()}
-                className="px-3 py-2 text-[16px] text-ink underline-offset-[6px] hover:underline disabled:text-warm-gray"
+                className="min-h-11 px-3 py-2 text-[16px] text-ink underline-offset-[6px] hover:underline disabled:text-warm-gray"
               >
                 Cancel
               </button>
@@ -178,7 +178,7 @@ export function OrderDialog({
             <p className="mt-3 font-mono text-[14px] text-muted">Order number: {orderNumber}</p>
             <p className="mt-3 text-[16px] leading-[1.63] text-body">Save this link to check your order.</p>
             <div className="mt-6 flex items-center gap-4">
-              <button type="button" onClick={() => dialogRef.current?.close()} className="rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+              <button type="button" onClick={() => dialogRef.current?.close()} className="rounded-pill bg-ink px-5 py-2.5 text-[16px] font-semibold text-paper">
                 Done
               </button>
               <button
@@ -208,7 +208,7 @@ export function OrderDialog({
               Someone just took that part of the piece.
             </h2>
             <p className="mt-2 text-[16px] leading-[1.63] text-body">Here&apos;s what&apos;s still available.</p>
-            <button type="button" onClick={() => dialogRef.current?.close()} className="mt-6 rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+            <button type="button" onClick={() => dialogRef.current?.close()} className="mt-6 rounded-pill bg-ink px-5 py-2.5 text-[16px] font-semibold text-paper">
               See what&apos;s left
             </button>
           </div>

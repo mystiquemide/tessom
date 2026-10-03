@@ -40,7 +40,7 @@ function HeroCard({remnant, tilt}: {remnant: ShopRemnant; tilt: string}) {
           </div>
         </div>
         <div className="mt-4 flex items-baseline justify-between gap-3">
-          <h3 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{remnant.title}</h3>
+          <h2 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{remnant.title}</h2>
           {price !== null && <p className="font-mono text-[14px] text-ink">from {formatPrice(price)}</p>}
         </div>
         <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">
@@ -61,7 +61,7 @@ export function Hero({remnants}: {remnants: readonly ShopRemnant[]}) {
         </p>
         <Link
           href="/shop"
-          className="mt-8 inline-flex items-center gap-2 rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper"
+          className="mt-8 inline-flex items-center gap-2 rounded-pill bg-ink px-5 py-2.5 text-[16px] font-semibold text-paper"
         >
           Browse pieces
           <span aria-hidden="true" className="opacity-60">

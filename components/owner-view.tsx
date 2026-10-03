@@ -52,8 +52,8 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
   }
 
   return (
-    <main className="mx-auto max-w-page px-6 pb-4 pt-10">
-      <Link href="/owner" className="text-[14px] text-ink underline-offset-[6px] hover:underline">
+    <main id="main" className="mx-auto max-w-page px-6 pb-4 pt-10">
+      <Link href="/owner" className="inline-flex min-h-11 items-center text-[14px] text-ink underline-offset-[6px] hover:underline">
         ← All owners
       </Link>
 
@@ -66,7 +66,7 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
           </p>
         </div>
         <div className="text-right">
-          <p className="font-mono text-[12px] uppercase tracking-wide text-muted">Earned so far</p>
+          <p className="font-mono text-[13px] uppercase tracking-wide text-muted">Earned so far</p>
           <p className="font-serif text-[36px] leading-[1.31] text-rust">{formatPrice(owner.earned)}</p>
         </div>
       </div>
@@ -103,13 +103,13 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
                       onClick={() => void decide(remnant, "grant")}
                       className="rounded-pill bg-ink px-4 py-2 text-[14px] font-semibold text-paper disabled:bg-warm-gray"
                     >
-                      {saving === remnant.id ? <span className="font-mono text-[12px] font-normal">Saving…</span> : "Approve and list"}
+                      {saving === remnant.id ? <span className="font-mono text-[13px] font-normal">Saving…</span> : "Approve and list"}
                     </button>
                     <button
                       type="button"
                       disabled={saving === remnant.id}
                       onClick={() => setConfirming(remnant.id)}
-                      className="px-2 py-2 text-[14px] text-ink underline-offset-[6px] hover:underline disabled:text-warm-gray"
+                      className="min-h-11 px-2 py-2 text-[14px] text-ink underline-offset-[6px] hover:underline disabled:text-warm-gray"
                     >
                       Decline
                     </button>
@@ -122,7 +122,7 @@ export function OwnerView({owner, decisionKey}: {owner: Owner; decisionKey: stri
                       <button type="button" onClick={() => void decide(remnant, "decline")} className="rounded-pill bg-ink px-4 py-2 text-[14px] font-semibold text-paper">
                         Yes, decline
                       </button>
-                      <button type="button" onClick={() => setConfirming(null)} className="px-2 py-2 underline-offset-[6px] hover:underline">
+                      <button type="button" onClick={() => setConfirming(null)} className="min-h-11 px-2 py-2 underline-offset-[6px] hover:underline">
                         Keep waiting
                       </button>
                     </div>

@@ -10,9 +10,7 @@ export default function NotFound() {
   return (
     <>
       <SiteNav />
-      <div id="main" className="flex-1">
-        <NotFoundView />
-      </div>
+      <NotFoundView />
     </>
   );
 }

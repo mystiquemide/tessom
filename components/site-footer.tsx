@@ -3,7 +3,7 @@ import Link from "next/link";
 import {availableKinds, fetchShopRemnants, KIND_LABELS} from "../lib/shop";
 import {Logo} from "./logo";
 
-const linkClass = "text-ink underline-offset-[6px] hover:underline";
+const linkClass = "inline-block py-1 text-ink underline-offset-[6px] hover:underline";
 
 export async function SiteFooter() {
   const remnants = await fetchShopRemnants();
@@ -22,7 +22,7 @@ export async function SiteFooter() {
 
           {kinds.length > 0 && (
             <nav aria-label="Shop by item">
-              <p className="font-mono text-[12px] uppercase tracking-wide text-muted">Shop</p>
+              <p className="font-mono text-[13px] uppercase tracking-wide text-muted">Shop</p>
               <ul className="mt-3 space-y-2 text-[14px]">
                 {kinds.map((entry) => (
                   <li key={entry.kind}>
@@ -37,7 +37,7 @@ export async function SiteFooter() {
 
 
           <nav aria-label="Workshop">
-            <p className="font-mono text-[12px] uppercase tracking-wide text-muted">Workshop</p>
+            <p className="font-mono text-[13px] uppercase tracking-wide text-muted">Workshop</p>
             <ul className="mt-3 space-y-2 text-[14px]">
               <li>
                 <Link href="/studio" className={linkClass}>

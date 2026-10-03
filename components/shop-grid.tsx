@@ -4,7 +4,7 @@ import {availableKinds, cutsLabel, formatPrice, fromPrice, KIND_LABELS, shelfOrd
 import {CutPlan} from "./cut-plan";
 
 function chipClass(active: boolean): string {
-  return `inline-flex items-center rounded-pill px-4 py-2 text-[14px] font-medium leading-none transition-colors ${
+  return `inline-flex min-h-11 items-center rounded-pill px-4 py-2 text-[14px] font-medium leading-none transition-colors ${
     active ? "bg-ink text-paper" : "bg-paper text-ink shadow-hairline hover:shadow-card"
   }`;
 }
@@ -29,7 +29,7 @@ function ShopCard({remnant}: {remnant: ShopRemnant}) {
           className="border border-charcoal/60"
         />
         <div className="mt-4 flex items-baseline justify-between gap-3">
-          <h3 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{remnant.title}</h3>
+          <h2 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{remnant.title}</h2>
           {price !== null && <p className="shrink-0 font-mono text-[14px] text-ink">from {formatPrice(price)}</p>}
         </div>
         <p className="mt-1 font-mono text-[14px] leading-[1.71] text-muted">
@@ -49,7 +49,7 @@ export function ShopGrid({remnants, allRemnants, kind}: {remnants: readonly Shop
   const shelf = shelfOrder(remnants);
 
   return (
-    <section id="shop" className="mx-auto max-w-page px-6 pt-16 sm:pt-20">
+    <main id="main" className="mx-auto max-w-page px-6 pt-16 sm:pt-20">
       <div className="mx-auto max-w-2xl text-center">
         <h1 className="text-[clamp(32px,5vw,44px)] leading-[1.25] text-ink">On the table right now.</h1>
         <p className="mt-3 text-[16px] leading-[1.63] text-body">Each offcut is one of one. Order a cut and the fabric it uses is gone.</p>
@@ -83,12 +83,12 @@ export function ShopGrid({remnants, allRemnants, kind}: {remnants: readonly Shop
         <div className="mx-auto mt-12 max-w-md text-center">
           <p className="font-serif text-[20px] text-ink">{kind === null ? "No pieces on the table right now." : "Nothing on the table fits that yet."}</p>
           {kind !== null && (
-            <Link href="/shop" className="mt-4 inline-flex rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+            <Link href="/shop" className="mt-4 inline-flex rounded-pill bg-ink px-5 py-2.5 text-[16px] font-semibold text-paper">
               See everything
             </Link>
           )}
         </div>
       )}
-    </section>
+    </main>
   );
 }

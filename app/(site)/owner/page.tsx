@@ -23,7 +23,7 @@ async function loadOwners() {
 export default async function OwnersPage() {
   const owners = await loadOwners();
   return (
-    <main className="mx-auto max-w-page px-6 pb-4 pt-16 sm:pt-20">
+    <main id="main" className="mx-auto max-w-page px-6 pb-4 pt-16 sm:pt-20">
       <div className="mx-auto max-w-2xl text-center">
         <h1 className="text-[clamp(32px,5vw,44px)] leading-[1.25] text-ink">The people behind the fabric.</h1>
         <p className="mt-3 text-[16px] leading-[1.63] text-body">

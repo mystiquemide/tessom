@@ -48,8 +48,8 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
   }
 
   return (
-    <main className="mx-auto max-w-page px-6 pb-4 pt-10">
-      <Link href="/shop" className="text-[14px] text-ink underline-offset-[6px] hover:underline">
+    <main id="main" className="mx-auto max-w-page px-6 pb-4 pt-10">
+      <Link href="/shop" className="inline-flex min-h-11 items-center text-[14px] text-ink underline-offset-[6px] hover:underline">
         ← All pieces
       </Link>
 
@@ -69,7 +69,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
               className="border border-charcoal/60"
             />
           </div>
-          <p className="mt-3 font-mono text-[12px] leading-[1.5] text-muted">Dashed blue shows where we cut. Hatching is a flaw. Each square on the grid is 10 cm.</p>
+          <p className="mt-3 font-mono text-[14px] leading-[1.5] text-muted">Dashed blue shows where we cut. Hatching is a flaw. Each square on the grid is 10 cm.</p>
         </div>
 
         <div>
@@ -100,7 +100,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
                       )}
                       <div className="min-w-0 flex-1">
                         <h2 className="font-serif text-[20px] font-medium leading-[1.3] text-ink">{offer.name}</h2>
-                        <p className="mt-0.5 font-mono text-[12px] leading-[1.5] text-muted">{describeOfferPieces(offer)}</p>
+                        <p className="mt-0.5 font-mono text-[14px] leading-[1.5] text-muted">{describeOfferPieces(offer)}</p>
                         <p className="mt-1 font-mono text-[14px] leading-[1.71] text-ink">
                           {formatPrice(offer.price)} <span className="text-rust">· Includes {formatPrice(offer.ownerShare)} for the fabric&apos;s owner</span>
                         </p>
@@ -110,7 +110,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
                       type="button"
                       onClick={() => setDialogOffer(offer)}
                       aria-label={`Order ${offer.name} for ${formatPrice(offer.price)}`}
-                      className="w-full shrink-0 rounded-pill bg-ink px-4 py-2 text-[14px] font-semibold text-paper sm:w-auto"
+                      className="w-full min-h-11 shrink-0 rounded-pill bg-ink px-4 py-2 text-[14px] font-semibold text-paper sm:w-auto"
                     >
                       Order this cut →
                     </button>
@@ -124,7 +124,7 @@ export function RemnantView({remnant}: {remnant: ShopRemnant}) {
               <p className="mt-2 text-[16px] leading-[1.63] text-body">
                 {spokenFor ? "Every cut from this offcut has been ordered." : "None of our products fit in what is left of this offcut."}
               </p>
-              <Link href="/shop" className="mt-4 inline-flex rounded-pill bg-ink px-5 py-2 text-[16px] font-semibold text-paper">
+              <Link href="/shop" className="mt-4 inline-flex rounded-pill bg-ink px-5 py-2.5 text-[16px] font-semibold text-paper">
                 See what else is on the table
               </Link>
             </section>

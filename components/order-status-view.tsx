@@ -14,8 +14,8 @@ const MESSAGES: Record<OrderStatus["step"], string> = {
 export function OrderStatusView({order}: {order: OrderStatus}) {
   const current = ORDER_STEPS.indexOf(order.step);
   return (
-    <main className="mx-auto max-w-page px-6 pb-4 pt-10">
-      <Link href="/shop" className="text-[14px] text-ink underline-offset-[6px] hover:underline">
+    <main id="main" className="mx-auto max-w-page px-6 pb-4 pt-10">
+      <Link href="/shop" className="inline-flex min-h-11 items-center text-[14px] text-ink underline-offset-[6px] hover:underline">
         ← Back to the shop
       </Link>
 
@@ -32,7 +32,7 @@ export function OrderStatusView({order}: {order: OrderStatus}) {
               className="border border-charcoal/60"
             />
           </div>
-          <p className="mt-3 font-mono text-[12px] leading-[1.5] text-muted">The darkened areas are the panels cut for you.</p>
+          <p className="mt-3 font-mono text-[13px] leading-[1.5] text-muted">The darkened areas are the panels cut for you.</p>
         </div>
 
         <div>
@@ -55,7 +55,7 @@ export function OrderStatusView({order}: {order: OrderStatus}) {
                 <li key={step} aria-current={active ? "step" : undefined} className="flex items-center gap-3">
                   <span
                     aria-hidden="true"
-                    className={`flex size-7 shrink-0 items-center justify-center rounded-pill font-mono text-[12px] ${
+                    className={`flex size-7 shrink-0 items-center justify-center rounded-pill font-mono text-[13px] ${
                       done || active ? "bg-teal text-paper" : "bg-recessed text-muted"
                     }`}
                   >
