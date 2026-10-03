@@ -18,8 +18,8 @@ const remnant: ShopRemnant = {
   defects: [],
   allocations: [],
   offers: [
-    { id: "t1", name: "Pad", price: 85.55, ownerShare: 6, pieces: [{ x: 0, y: 0, w: 47, h: 47, rotated: false, label: "Front", wCm: 45, hCm: 45 }] },
-    { id: "t2", name: "Bag", price: 95, ownerShare: 7, pieces: [] },
+    { id: "t1", name: "Pad", kind: "cushion", price: 85.55, ownerShare: 6, pieces: [{ x: 0, y: 0, w: 47, h: 47, rotated: false, label: "Front", wCm: 45, hCm: 45 }] },
+    { id: "t2", name: "Bag", kind: "tote", price: 95, ownerShare: 7, pieces: [] },
   ],
 };
 

@@ -5,9 +5,24 @@ import {sanityImageUrl, type SanityImageSource} from "../sanity/image";
 import {createPublicReadClient} from "../sanity/public";
 import type {SanityReadClient} from "../sanity/client";
 
+export const KIND_LABELS = {
+  cushion: "Cushions",
+  "bench-pad": "Bench pads",
+  lumbar: "Lumbar cushions",
+  "seat-pad": "Seat pads",
+  tote: "Totes",
+} as const;
+
+export type ShopKind = keyof typeof KIND_LABELS;
+
+export function isShopKind(value: unknown): value is ShopKind {
+  return typeof value === "string" && Object.prototype.hasOwnProperty.call(KIND_LABELS, value);
+}
+
 export interface ShopOffer {
   id: string;
   name: string;
+  kind: string;
   price: number;
   ownerShare: number;
   pieces: CutPlanPiece[];
@@ -67,6 +82,7 @@ export function buildShopRemnants(data: RawShopData, photoWidth = 1200): ShopRem
       offers.push({
         id: offer.templateId,
         name: template.name,
+        kind: template.kind ?? "",
         price: offer.price,
         ownerShare: offer.ownerShare,
         pieces: offer.placement.map((placement, index) => ({...placement, ...described[index]})),
@@ -133,4 +149,26 @@ export function shopStats(remnants: readonly ShopRemnant[]): ShopStats {
     offers: open.reduce((total, remnant) => total + remnant.offers.length, 0),
     areaM2: Math.round(areaCm2 / 1000) / 10,
   };
+}
+
+/** Remnants that have an offer of this kind. Each keeps only the offers of that kind. Sold areas stay drawn. */
+export function filterByKind(remnants: readonly ShopRemnant[], kind: ShopKind | null): ShopRemnant[] {
+  if (kind === null) return [...remnants];
+  return remnants
+    .map((remnant) => ({...remnant, offers: remnant.offers.filter((offer) => offer.kind === kind)}))
+    .filter((remnant) => remnant.offers.length > 0);
+}
+
+/** Item types with at least one orderable remnant, in catalogue order, with how many remnants offer each. */
+export function availableKinds(remnants: readonly ShopRemnant[]): {kind: ShopKind; count: number}[] {
+  const open = orderable(remnants);
+  return (Object.keys(KIND_LABELS) as ShopKind[])
+    .map((kind) => ({kind, count: open.filter((remnant) => remnant.offers.some((offer) => offer.kind === kind)).length}))
+    .filter((entry) => entry.count > 0);
+}
+
+/** Orderable remnants first (most offers first), then partly sold ones, then anything too small to offer. */
+export function shelfOrder(remnants: readonly ShopRemnant[]): ShopRemnant[] {
+  const rank = (remnant: ShopRemnant): number => (remnant.status === "listed" && remnant.offers.length > 0 ? 0 : remnant.offers.length > 0 ? 1 : 2);
+  return [...remnants].sort((a, b) => rank(a) - rank(b) || b.offers.length - a.offers.length || a.id.localeCompare(b.id));
 }
