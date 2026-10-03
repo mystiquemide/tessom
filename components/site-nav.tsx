@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import {Logo} from "./logo";
+
 const LINKS = [
   {href: "/#shop", label: "Shop"},
   {href: "/#how", label: "How it works"},
@@ -11,8 +13,8 @@ export function SiteNav() {
   return (
     <header className="border-b border-rule bg-canvas">
       <div className="mx-auto flex h-16 max-w-page items-center justify-between px-6">
-        <Link href="/" className="font-serif text-[22px] leading-none text-ink">
-          Tessom
+        <Link href="/" aria-label="Tessom home">
+          <Logo />
         </Link>
 
         <nav aria-label="Main" className="hidden items-center gap-8 sm:flex">

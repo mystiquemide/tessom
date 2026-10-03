@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import {Logo} from "./logo";
+
 import {fetchPhotoCredits} from "../lib/sanity/public";
 
 export async function SiteFooter() {
@@ -10,7 +12,7 @@ export async function SiteFooter() {
       <div className="mx-auto max-w-page px-6 py-12">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-sm">
-            <p className="font-serif text-[22px] leading-none text-ink">Tessom</p>
+            <Logo />
             <p className="mt-3 text-[14px] leading-[1.71] text-body">
               Every offcut has a next piece. Leftover upholstery fabric, cut into one-off cushions, pads and totes.
             </p>
