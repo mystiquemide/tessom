@@ -4,6 +4,7 @@ import Image from "next/image";
 import {useCallback, useState} from "react";
 
 import type {BoardCard, BoardColumn} from "../lib/workshop/board";
+import {SubmissionsPanel} from "./submissions-panel";
 
 type LoadResult = "ok" | "unauthorized" | "unconfigured" | "error";
 
@@ -303,6 +304,8 @@ export function WorkshopBoard() {
           {boardError}
         </p>
       )}
+
+      <SubmissionsPanel pin={pin} onChanged={() => void refresh()} onLocked={() => lock("The PIN is no longer valid. Enter it again.")} />
 
       <div className="mt-8 grid auto-cols-[minmax(188px,1fr)] grid-flow-col items-start gap-4 overflow-x-auto pb-4">
         {columns.map((column) => (

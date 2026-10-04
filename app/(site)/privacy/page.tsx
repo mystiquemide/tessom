@@ -36,7 +36,7 @@ const SECTIONS = [
   },
   {
     heading: "If you offer your fabric",
-    body: "The offer form keeps your name, your email, the fabric's size and notes, and the photo you upload. Your name and email are encrypted before they are saved, and the offer stays on a private path that the public data does not return. Only the workshop can read it, to contact you. Nothing is listed until you approve it.",
+    body: "The offer form keeps your name, your email, the fabric's size and notes, and the photo you upload. Your name and email are encrypted before they are saved, and the offer stays on a private path that the public data does not return. Only the workshop can read it, to contact you. Nothing is listed until you approve it. If the workshop accepts, the fabric appears under a generic owner name such as Client 3fa9, never your name or email.",
   },
   {
     heading: "Questions about your details",
