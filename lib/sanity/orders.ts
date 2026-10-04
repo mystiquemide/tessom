@@ -312,7 +312,7 @@ function validateEncryptedBuyerContact(value: unknown, field = "buyerContact"): 
   };
 }
 
-function encryptBuyerContact(
+export function encryptBuyerContact(
   buyerName: string,
   buyerEmail: string,
   environment: SanityEnvironment = process.env,

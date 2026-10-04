@@ -35,6 +35,10 @@ const SECTIONS = [
     body: "When a workshop editor explicitly uses Read selvage photo in Studio, the selected Sanity image is sent to Groq to read visible manufacturer details. No buyer name or email is included. The result is shown for review before anything is saved.",
   },
   {
+    heading: "If you offer your fabric",
+    body: "The offer form keeps your name, your email, the fabric's size and notes, and the photo you upload. Your name and email are encrypted before they are saved, and the offer stays on a private path that the public data does not return. Only the workshop can read it, to contact you. Nothing is listed until you approve it.",
+  },
+  {
     heading: "Questions about your details",
     body: "Ask the workshop that contacts you about your order. It holds the only readable copy.",
   },
