@@ -31,6 +31,10 @@ const SECTIONS = [
     body: "No payment is taken on this site. Ordering reserves your cut. The workshop arranges payment with you directly.",
   },
   {
+    heading: "Fabric photo extraction",
+    body: "When a workshop editor explicitly uses Read selvage photo in Studio, the selected Sanity image is sent to Groq to read visible manufacturer details. No buyer name or email is included. The result is shown for review before anything is saved.",
+  },
+  {
     heading: "Questions about your details",
     body: "Ask the workshop that contacts you about your order. It holds the only readable copy.",
   },

@@ -19,7 +19,13 @@
     "@sanity/client": "8.9.0",
     "@sanity/image-url": "^2.1.1",
     "@sanity/vision": "6.17.0",
+    "@sanity/workflow-components": "0.36.0",
+    "@sanity/workflow-diagram": "0.36.0",
     "@sanity/workflow-engine": "0.36.0",
+    "@sanity/workflow-react": "0.36.0",
+    "@sanity/workflow-sdk": "0.36.0",
+    "@sanity/workflow-studio": "0.36.0",
+    "@sanity/workflow-studio-plugin": "0.36.0",
     "next": "16.3.8",
     "next-sanity": "13.3.4",
     "react": "19.2.8",
@@ -42,5 +48,10 @@
     "tsx": "4.20.6",
     "typescript": "6.0.3",
     "vitest": "3.2.7"
+  },
+  "overrides": {
+    "@sanity/sdk": {
+      "@sanity/mutate": "0.18.2"
+    }
   }
 }

@@ -29,9 +29,9 @@ Workshop PIN for the live site: `tessom-judges-2026`
 
 | Criterion | Where |
 |---|---|
-| App functionality | The 60-second flow above. Every step runs against the live Sanity project |
+| App functionality | The 60-second flow above, plus Studio's review-before-apply selvage extraction. Every step runs against the live Sanity project |
 | Schema thoughtfulness | [Schema](#schema) and [Why the schema looks like this](#why-the-schema-looks-like-this) |
-| Workflows bonus | [Workflow](#workflow). Consent, allocation and production are real stages, with an allocation guard |
+| Workflows bonus | [Workflow](#workflow). Consent, allocation and production are real stages, with an allocation guard and a dedicated Studio Workflows view |
 | Creativity | The cut plan: dashed panels drawn on the real fabric photo, with flaws kept clear |
 | Build process | [What broke, and how I fixed it](#what-broke-and-how-i-fixed-it), and the tests that pin each fix |
 
@@ -79,6 +79,8 @@ flowchart LR
 ```
 
 A workshop logs an offcut with its size, pattern repeat, direction, flaws and a photo. The owner says yes before it is listed. On every read, the offer engine fits each product pattern onto the free fabric and prices the fit. Offers are never stored, so nothing can go stale. An order locks the exact area it uses, so every other cut that needs it disappears.
+
+Studio adds two workshop tools. The Workflows view shows every deployed definition and live instance as a table or board. On a remnant document, **Read selvage photo** sends its Sanity image to Groq Vision and suggests the printed fabric name, maker, repeat and direction. The editor sees the evidence and confidence first, and nothing changes until they press **Apply suggestions**. Missing details stay untouched instead of being guessed.
 
 ## Schema
 
@@ -165,9 +167,9 @@ The winner's panels become sold areas on the remnant (`areasSold: 3`). The loser
 
 Sanity Workflows 0.36 has no background runtime, so every route that changes data advances the workflow itself. The allocation guard and the area lock check the same thing, so they cannot disagree.
 
-## 11 ways I tried to break it
+## 13 ways I tried to break it
 
-The suite has 249 tests across 30 files.
+The suite has 262 tests across 34 files.
 
 | Attempt | Outcome | Proof |
 |---|---|---|
@@ -182,6 +184,8 @@ The suite has 249 tests across 30 files.
 | Decide consent with another owner's link | 401 | [owner-consent-route.test.ts](tests/api/owner-consent-route.test.ts) |
 | Find a contact on the buyer order page | None is returned | [order-status.test.ts](tests/order-status.test.ts) |
 | Re-seed over live orders | Refused without an explicit override | [seed.test.ts](tests/sanity/seed.test.ts) |
+| Send an arbitrary URL to the fabric extractor | Refused before Groq is called | [fabric-extraction-route.test.ts](tests/api/fabric-extraction-route.test.ts) |
+| Show the extractor a photo without readable selvage | Unknown fields stay null instead of being invented | [fabric-extraction.test.ts](tests/groq/fabric-extraction.test.ts) |
 
 ## Run locally
 
@@ -193,15 +197,16 @@ npm run test:run
 npm run dev
 ```
 
-Browsing the shop needs no secrets. Orders, the workshop board and the owner pages need a write token for your own Sanity project.
+Browsing the shop needs no secrets. Orders, the workshop board and the owner pages need a write token for your own Sanity project. Selvage extraction also needs a Groq API key.
 
 | Variable | Purpose |
 |---|---|
 | `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET` | Which Sanity dataset to use |
+| `NEXT_PUBLIC_WORKFLOW_TAG`, `WORKFLOW_TAG` | Matching public Studio and server workflow namespaces, for example `tessom-dev` |
 | `SANITY_API_WRITE_TOKEN` | Server-side writes. Never sent to the browser |
+| `GROQ_API_KEY` | Server-side Groq Vision access for explicit selvage extraction |
 | `ORDER_ENCRYPTION_KEY` | 32 random bytes in base64. Encrypts buyer contacts and signs owner links |
 | `WORKSHOP_PIN` | At least 12 characters. Unlocks `/workshop` |
-| `WORKFLOW_TAG` | Names the workflow set, for example `tessom-dev` |
 | `NEXT_PUBLIC_SITE_URL` | Public address, used for the share preview |
 | `ALLOW_PRODUCTION_SEED`, `ALLOW_DESTRUCTIVE_SEED` | Deliberate overrides the seed script requires |
 
@@ -226,7 +231,8 @@ To set up your own project, run `npm run schema:deploy`, `npm run wf:deploy`, `n
 - The workshop uses one shared PIN. Wrong tries are rate-limited per address in memory, which slows a script on one server but is not shared across instances.
 - Owner links have no expiry. Rotating `ORDER_ENCRYPTION_KEY` revokes them all, and also makes stored buyer contacts unreadable.
 - Owner pages are public, so anyone can see each owner's accrued earnings. Owner emails sit in the public dataset. The seed data uses `example.com` addresses.
-- The catalog is sample data. The 12 offcuts, 6 owners and fabric makers are invented. The photos are real, from Unsplash. There is no AI in Tessom.
+- The catalog is sample data. The 12 offcuts, 6 owners and fabric makers are invented. The photos are real, from Unsplash. Groq Vision is used only when an editor explicitly asks Studio to read visible selvage details.
+- Selvage extraction needs a clear photo of printed manufacturer details. Every suggestion requires editor review and can be left unapplied.
 - Sanity Workflows is early access (0.36).
 - Unaudited hackathon code. Do not point it at real customers or payments.
 
@@ -250,7 +256,7 @@ Fabric and product photographs are from [Unsplash](https://unsplash.com), used u
 - [The Cleveland Museum of Art](https://unsplash.com/photos/a-close-up-of-a-green-and-white-rug--B6iItEAKVE)
 - [antipillingfabric manufacturers](https://unsplash.com/photos/a-close-up-view-of-a-white-fabric-W_lQogTM6Os)
 
-Built with Next.js, Sanity (Studio, Content Lake and Workflows), Tailwind CSS, Zod and Vitest. Type is Fraunces, Inter, JetBrains Mono and Grenze Gotisch, all under the SIL Open Font License. The Sanity mark comes from Simple Icons.
+Built with Next.js, Sanity (Studio, Content Lake and Workflows), Groq Vision, Tailwind CSS, Zod and Vitest. Type is Fraunces, Inter, JetBrains Mono and Grenze Gotisch, all under the SIL Open Font License. The Sanity mark comes from Simple Icons.
 
 ## License
 
