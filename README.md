@@ -12,7 +12,7 @@ Every offcut has a next piece. Leftover upholstery fabric, cut into one-off cush
 | Demo video | https://youtu.be/HU9j5eTUA84 |
 | Sanity project ID | `59g78icb` |
 | Dataset | `production` (public read) |
-| DEV post | Pending |
+| DEV post | https://dev.to/mystiquemide/tessom-every-upholstery-offcut-gets-a-next-piece-4nim |
 
 Built for the DEV x Sanity Challenge.
 
