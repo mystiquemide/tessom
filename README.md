@@ -24,7 +24,7 @@ Workshop PIN for the live site: `tessom-judges-2026`
 2. Open the same piece in a second window, side by side. Order a cut in one. The other window updates by itself, with no reload: the sold area is stamped and the competing cuts disappear. Try ordering the same cut in both and one is refused.
 3. Open `/workshop`, enter the PIN, and move your order along: cut, sewn, shipped. The buyer's page at `/order/[id]` follows.
 4. On the board, open the Awaiting consent column and press Copy owner link. Open it, and approve or decline the offcut. That is the Workflows consent stage.
-5. Open `/submit` and offer a fabric with a photo. In `/workshop`, the new offer appears under Offered fabric. Enter a value and press Accept, and it joins Awaiting consent with its own owner link.
+5. Open `/submit` and offer a fabric with a photo. In `/workshop`, the new offer appears under Offered fabric. Press Read selvage photo to fill in the name, maker and repeat from the printed selvage, then enter a value and press Accept. It joins Awaiting consent with its own owner link, and the submitter's `/offer/[reference]` page shows Accepted.
 6. Query the live data yourself. See the two queries below.
 
 ## Where to look for each judging criterion
@@ -82,7 +82,7 @@ flowchart LR
 
 A workshop logs an offcut with its size, pattern repeat, direction, flaws and a photo. The owner says yes before it is listed. On every read, the offer engine fits each product pattern onto the free fabric and prices the fit. Offers are never stored, so nothing can go stale. An order locks the exact area it uses, so every other cut that needs it disappears.
 
-Anyone with leftover fabric can offer it at `/submit`: size, a photo, and optional details. The offer is stored on a private path with the contact encrypted, and nothing is listed. The workshop reviews it on the board, sets a value and accepts, which creates the remnant and starts its consent workflow. The fabric then appears under a generic owner name, never the submitter's name or email.
+Anyone with leftover fabric can offer it at `/submit`: size, a photo, and optional details. The offer is stored on a private path with the contact encrypted, and nothing is listed. The submitter gets a private status page. The workshop reviews the offer on the board, can read the selvage photo with Groq Vision to pre-fill the fabric name, maker, repeat and direction, checks the fields, sets a value and accepts. That creates the remnant and starts its consent workflow. The fabric then appears under a generic owner name, never the submitter's name or email.
 
 Studio adds two workshop tools. The Workflows view shows every deployed definition and live instance as a table or board. On a remnant document, **Read selvage photo** sends its Sanity image to Groq Vision and suggests the printed fabric name, maker, repeat and direction. The editor sees the evidence and confidence first, and nothing changes until they press **Apply suggestions**. Missing details stay untouched instead of being guessed.
 
@@ -173,9 +173,9 @@ The winner's panels become sold areas on the remnant (`areasSold: 3`). The loser
 
 Sanity Workflows 0.36 has no background runtime, so every route that changes data advances the workflow itself. The allocation guard and the area lock check the same thing, so they cannot disagree.
 
-## 17 ways I tried to break it
+## 19 ways I tried to break it
 
-The suite has 292 tests across 37 files.
+The suite has 302 tests across 38 files.
 
 | Attempt | Outcome | Proof |
 |---|---|---|
@@ -192,6 +192,8 @@ The suite has 292 tests across 37 files.
 | Re-seed over live orders | Refused without an explicit override | [seed.test.ts](tests/sanity/seed.test.ts) |
 | Upload a script renamed to .jpg as fabric | Refused by the file's own bytes, nothing stored | [submissions-route.test.ts](tests/api/submissions-route.test.ts) |
 | Fill the offer form with a bot | The hidden field is filled, so nothing is stored and the bot learns nothing | [submissions-route.test.ts](tests/api/submissions-route.test.ts) |
+| Guess an offer reference, or look for a contact on the status page | A 16-character random reference, and the page carries no contact, photo or internal ID | [status.test.ts](tests/submissions/status.test.ts) |
+| Read a selvage from an image the workshop never accepted | The reader runs only on a stored offer's own photo, behind the PIN, and changes nothing until Accept | [workshop-submissions-routes.test.ts](tests/api/workshop-submissions-routes.test.ts) |
 | Accept the same fabric offer twice | 409, one remnant | [workshop-submissions-routes.test.ts](tests/api/workshop-submissions-routes.test.ts) |
 | Find the submitter's name or email in the public data | Private path, ciphertext, pseudonymous owner | [workshop-submissions-routes.test.ts](tests/api/workshop-submissions-routes.test.ts) |
 | Send an arbitrary URL to the fabric extractor | Refused before Groq is called | [fabric-extraction-route.test.ts](tests/api/fabric-extraction-route.test.ts) |

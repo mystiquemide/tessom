@@ -29,6 +29,12 @@ function SubmissionItem({
   onLocked: () => void;
 }) {
   const [value, setValue] = useState("");
+  const [fabricName, setFabricName] = useState(card.title === "Unnamed fabric" ? "" : card.title);
+  const [maker, setMaker] = useState("");
+  const [vCm, setVCm] = useState("");
+  const [hCm, setHCm] = useState("");
+  const [directional, setDirectional] = useState(card.directional);
+  const [reading, setReading] = useState<{phase: "idle" | "busy" | "failed"} | {phase: "shown"; confidence: string; evidence: string}>({phase: "idle"});
   const [state, setState] = useState<CardState>({phase: "idle"});
   const [copied, setCopied] = useState(false);
 
@@ -51,13 +57,55 @@ function SubmissionItem({
     }
   }
 
+  async function readSelvage() {
+    setReading({phase: "busy"});
+    try {
+      const response = await fetch("/api/workshop/submissions/read-selvage", {
+        method: "POST",
+        headers: {"content-type": "application/json", "x-workshop-pin": pin},
+        body: JSON.stringify({submissionId: card.id}),
+      });
+      if (response.status === 401) return onLocked();
+      if (!response.ok) return setReading({phase: "failed"});
+      const found = (await response.json()) as {
+        fabricName: string | null;
+        maker: string | null;
+        repeatVerticalCm: number | null;
+        repeatHorizontalCm: number | null;
+        directional: boolean | null;
+        confidence: string;
+        evidence: string;
+      };
+      // Suggestions only fill the fields. The workshop still reviews and presses Accept.
+      if (found.fabricName) setFabricName(found.fabricName);
+      if (found.maker) setMaker(found.maker);
+      if (found.repeatVerticalCm) setVCm(String(found.repeatVerticalCm));
+      if (found.repeatHorizontalCm) setHCm(String(found.repeatHorizontalCm));
+      // A printed direction arrow is evidence the pattern runs one way. Never switch it off automatically.
+      if (found.directional === true) setDirectional(true);
+      setReading({phase: "shown", confidence: found.confidence, evidence: found.evidence});
+    } catch {
+      setReading({phase: "failed"});
+    }
+  }
+
   async function accept() {
     const valuePerM = Number(value);
     if (!Number.isFinite(valuePerM) || valuePerM <= 0) {
       setState({phase: "error", message: "Enter what this fabric is worth per metre."});
       return;
     }
-    const response = await send("/api/workshop/submissions/accept", {submissionId: card.id, valuePerM});
+    const v = Number(vCm);
+    const h = Number(hCm);
+    const repeat = {...(v > 0 ? {vCm: v} : {}), ...(h > 0 ? {hCm: h} : {})};
+    const response = await send("/api/workshop/submissions/accept", {
+      submissionId: card.id,
+      valuePerM,
+      directional,
+      ...(fabricName.trim() ? {fabricName: fabricName.trim()} : {}),
+      ...(maker.trim() ? {maker: maker.trim()} : {}),
+      ...(Object.keys(repeat).length > 0 ? {repeat} : {}),
+    });
     if (!response) return;
     if (response.ok) {
       const body = (await response.json()) as {ownerLink: string | null; contact: {name: string; email: string}};
@@ -89,7 +137,7 @@ function SubmissionItem({
     const url = accepted.ownerLink && typeof window !== "undefined" ? `${window.location.origin}${accepted.ownerLink}` : accepted.ownerLink;
     return (
       <li className="rounded-card bg-paper p-3 shadow-card">
-        <h3 className="font-serif text-[16px] font-medium text-ink">{card.title} is in Awaiting consent.</h3>
+        <h3 className="font-serif text-[16px] font-medium text-ink">{fabricName.trim() || card.title} is in Awaiting consent.</h3>
         <p className="mt-1 text-[14px] leading-[1.71] text-body">Send this owner link to the submitter. It is the only way they can approve.</p>
         <div className="mt-2 rounded-[4px] bg-recessed p-2 font-mono text-[13px] leading-[1.5] text-ink">
           <p>{accepted.contact.name}</p>
@@ -127,6 +175,39 @@ function SubmissionItem({
       </div>
       <p className="mt-2 font-mono text-[13px] leading-[1.5] text-body">{card.details.join(" · ")}</p>
       {card.notes && <p className="mt-2 text-[14px] leading-[1.71] text-body">{card.notes}</p>}
+      <div className="mt-3">
+        <button type="button" disabled={reading.phase === "busy"} onClick={() => void readSelvage()} className="w-full rounded-pill bg-paper px-3 py-1.5 text-[14px] font-semibold text-ink shadow-hairline hover:shadow-card disabled:text-warm-gray">
+          {reading.phase === "busy" ? "Reading the selvage…" : "Read selvage photo"}
+        </button>
+        {reading.phase === "failed" && <p role="alert" className="mt-2 text-[13px] leading-[1.5] text-ink">Couldn&apos;t read this photo. Type the details by hand.</p>}
+        {reading.phase === "shown" && (
+          <p className="mt-2 text-[13px] leading-[1.5] text-body">
+            <span className="font-semibold text-ink">{reading.confidence} confidence.</span> {reading.evidence} Check the fields below before you accept.
+          </p>
+        )}
+      </div>
+      <label className="mt-3 block text-[13px] font-semibold text-ink">
+        Fabric name
+        <input value={fabricName} onChange={(event) => setFabricName(event.target.value)} maxLength={160} className="mt-1 w-full rounded-card border border-charcoal bg-paper px-3 py-2 text-[14px] text-ink" />
+      </label>
+      <label className="mt-3 block text-[13px] font-semibold text-ink">
+        Maker
+        <input value={maker} onChange={(event) => setMaker(event.target.value)} maxLength={160} className="mt-1 w-full rounded-card border border-charcoal bg-paper px-3 py-2 text-[14px] text-ink" />
+      </label>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <label className="block text-[13px] font-semibold text-ink">
+          Repeat up (cm)
+          <input value={vCm} onChange={(event) => setVCm(event.target.value)} inputMode="decimal" className="mt-1 w-full rounded-card border border-charcoal bg-paper px-3 py-2 text-[14px] text-ink" />
+        </label>
+        <label className="block text-[13px] font-semibold text-ink">
+          Repeat across (cm)
+          <input value={hCm} onChange={(event) => setHCm(event.target.value)} inputMode="decimal" className="mt-1 w-full rounded-card border border-charcoal bg-paper px-3 py-2 text-[14px] text-ink" />
+        </label>
+      </div>
+      <label className="mt-3 flex items-center gap-2 text-[13px] font-semibold text-ink">
+        <input type="checkbox" checked={directional} onChange={(event) => setDirectional(event.target.checked)} className="size-4" />
+        Directional (the pattern runs one way)
+      </label>
       <label className="mt-3 block text-[13px] font-semibold text-ink">
         Value per metre
         <input

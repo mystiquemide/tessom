@@ -30,12 +30,18 @@ vi.mock("../../lib/sanity/client", async (importOriginal) => ({
     patch: () => ({set: (value: unknown) => ({ifRevisionId: () => ({commit: () => patchSet(value)})})}),
   }),
 }));
+const extract = vi.fn();
+vi.mock("../../lib/groq/fabric-extraction", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../lib/groq/fabric-extraction")>()),
+  extractFabricDetails: (...args: unknown[]) => extract(...args),
+}));
 const startConsent = vi.fn();
 vi.mock("../../lib/workflow", () => ({startConsentInstance: (...args: unknown[]) => startConsent(...args)}));
 
 import {GET as list} from "../../app/api/workshop/submissions/route";
 import {POST as accept} from "../../app/api/workshop/submissions/accept/route";
 import {POST as decline} from "../../app/api/workshop/submissions/decline/route";
+import {POST as readSelvage} from "../../app/api/workshop/submissions/read-selvage/route";
 
 const post = (handler: typeof accept, body: unknown, pin: string | null = PIN) =>
   handler(new Request("http://x/api", {method: "POST", headers: {"content-type": "application/json", ...(pin ? {"x-workshop-pin": pin} : {})}, body: JSON.stringify(body)}));
@@ -49,6 +55,9 @@ const stored = () => ({
 beforeEach(() => {
   process.env.WORKSHOP_PIN = PIN;
   process.env.ORDER_ENCRYPTION_KEY = KEY;
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID = "59g78icb";
+  process.env.NEXT_PUBLIC_SANITY_DATASET = "production";
+  extract.mockReset().mockResolvedValue({fabricName: "WILLOW GRID", maker: "MORROW TEXTILES", repeatVerticalCm: 32, repeatHorizontalCm: 16, directional: true, confidence: "high", evidence: "Printed on the selvage"});
   for (const mock of [commit, patchSet, doc, fetchMock, startConsent, txn.createIfNotExists, txn.patch]) mock.mockClear();
   doc.mockResolvedValue(stored());
   commit.mockResolvedValue({});
@@ -113,5 +122,49 @@ describe("workshop submissions", () => {
     expect(patchSet).toHaveBeenCalledWith({status: "declined"});
     doc.mockResolvedValueOnce({...stored(), status: "declined"});
     expect((await post(decline, {submissionId: ID})).status).toBe(409);
+  });
+
+  it("reads the selvage of an offer's photo, only for the workshop, and changes nothing", async () => {
+    expect((await post(readSelvage, {submissionId: ID}, null)).status).toBe(401);
+    expect(extract).not.toHaveBeenCalled();
+
+    const response = await post(readSelvage, {submissionId: ID});
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({fabricName: "WILLOW GRID", confidence: "high"});
+    const [url] = extract.mock.calls[0] as [string];
+    expect(url).toMatch(/^https:\/\/cdn\.sanity\.io\/images\/59g78icb\/production\//);
+    expect(commit).not.toHaveBeenCalled();
+    expect(patchSet).not.toHaveBeenCalled();
+  });
+
+  it("will not read a handled offer or one without a photo", async () => {
+    doc.mockResolvedValueOnce({...stored(), status: "accepted"});
+    expect((await post(readSelvage, {submissionId: ID})).status).toBe(409);
+    doc.mockResolvedValueOnce({...stored(), photo: null});
+    expect((await post(readSelvage, {submissionId: ID})).status).toBe(422);
+    expect(extract).not.toHaveBeenCalled();
+  });
+
+  it("uses the workshop's reviewed corrections when accepting", async () => {
+    const response = await post(accept, {submissionId: ID, valuePerM: 40, fabricName: "Willow Grid", maker: "Morrow Textiles", repeat: {vCm: 32, hCm: 16}, directional: false});
+    expect(response.status).toBe(200);
+    const remnant = (txn.createIfNotExists.mock.calls[1] as unknown as [Record<string, unknown>])[0] as {directional: boolean; title: string; fabric: {name: string; maker: string}; repeat: unknown};
+    expect(remnant.title).toBe("Willow Grid");
+    expect(remnant.directional).toBe(false);
+    expect(remnant.fabric).toMatchObject({name: "Willow Grid", maker: "Morrow Textiles"});
+    expect(remnant.repeat).toEqual({_type: "repeat", vCm: 32, hCm: 16});
+  });
+
+  it("lets the workshop mark a fabric directional after reading its selvage", async () => {
+    doc.mockResolvedValueOnce({...stored(), directional: false});
+    await post(accept, {submissionId: ID, valuePerM: 40, directional: true});
+    const remnant = (txn.createIfNotExists.mock.calls[1] as unknown as [Record<string, unknown>])[0] as {directional: boolean};
+    expect(remnant.directional).toBe(true);
+  });
+
+  it("rejects malformed corrections", async () => {
+    expect((await post(accept, {submissionId: ID, valuePerM: 40, repeat: {vCm: -1}})).status).toBe(400);
+    expect((await post(accept, {submissionId: ID, valuePerM: 40, repeat: {zz: 1}})).status).toBe(400);
+    expect((await post(accept, {submissionId: ID, valuePerM: 40, maker: "x".repeat(161)})).status).toBe(400);
   });
 });

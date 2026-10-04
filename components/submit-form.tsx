@@ -37,6 +37,9 @@ export function SubmitForm() {
           The workshop reviews every submission before anything is listed, and will email you at the address you gave. Nothing is public yet.
         </p>
         <p className="mt-3 font-mono text-[14px] text-ink">Reference {phase.reference}</p>
+        <p className="mt-3 text-[16px] leading-[1.63] text-body">
+          <a href={`/offer/${phase.reference}`} className="text-ink underline underline-offset-[6px]">Check on your offer</a> any time. Keep that address, because it is the only way back.
+        </p>
       </div>
     );
   }

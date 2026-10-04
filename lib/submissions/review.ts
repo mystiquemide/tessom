@@ -29,6 +29,7 @@ export interface SubmissionCard {
   title: string;
   details: string[];
   notes: string;
+  directional: boolean;
   photoUrl: string | null;
   /** First name only. The full contact opens only when the workshop accepts. */
   firstName: string;
@@ -56,6 +57,7 @@ export function buildSubmissionCards(raw: readonly RawSubmission[]): SubmissionC
         item.maker?.trim() ? `by ${item.maker.trim()}` : "maker unknown",
       ],
       notes: item.notes?.trim() ?? "",
+      directional: item.directional === true,
       photoUrl: sanityImageUrl(item.photo, 240),
       firstName: firstNameOf(item.contact),
     }));
@@ -67,15 +69,28 @@ const KIND_LABEL: Record<string, string> = {client: "Client", designer: "Designe
  * The owner is a pseudonym ("Client 3fa9") so the submitter's real name never lands in the public dataset.
  * Their real contact stays encrypted on the private submission. The workshop can rename in Studio.
  */
+export interface AcceptOverrides {
+  fabricName?: string;
+  maker?: string;
+  repeat?: {vCm?: number; hCm?: number};
+  directional?: boolean;
+}
+
 export function buildAcceptDocuments(
   submission: RawSubmission,
   valuePerM: number,
+  overrides: AcceptOverrides = {},
 ): {ownerId: string; remnantId: string; owner: Record<string, unknown>; remnant: Record<string, unknown>} {
   const reference = publicSubmissionReference(submission._id);
   const ownerId = `owner-${reference}`;
   const remnantId = `remnant-${reference}`;
   const kind = submission.kind && submission.kind in KIND_LABEL ? submission.kind : "client";
   const assetRef = submission.photo?.asset?._ref;
+  const fabricName = overrides.fabricName?.trim() || submission.fabricName?.trim() || "";
+  const maker = overrides.maker?.trim() || submission.maker?.trim() || "";
+  const repeat = overrides.repeat && (overrides.repeat.vCm || overrides.repeat.hCm)
+    ? {_type: "repeat", ...(overrides.repeat.vCm ? {vCm: overrides.repeat.vCm} : {}), ...(overrides.repeat.hCm ? {hCm: overrides.repeat.hCm} : {})}
+    : null;
   return {
     ownerId,
     remnantId,
@@ -90,16 +105,17 @@ export function buildAcceptDocuments(
     remnant: {
       _id: remnantId,
       _type: "remnant",
-      title: submission.fabricName?.trim() || "Offered fabric",
+      title: fabricName || "Offered fabric",
       fabric: {
         _type: "fabric",
-        name: submission.fabricName?.trim() || "Unnamed fabric",
-        maker: submission.maker?.trim() || "Unknown maker",
+        name: fabricName || "Unnamed fabric",
+        maker: maker || "Unknown maker",
         valuePerM,
       },
+      ...(repeat ? {repeat} : {}),
       widthCm: submission.widthCm,
       heightCm: submission.heightCm,
-      directional: submission.directional === true,
+      directional: overrides.directional ?? submission.directional === true,
       defects: [],
       ...(assetRef ? {photo: {_type: "image", asset: {_type: "reference", _ref: assetRef}}} : {}),
       owner: {_type: "reference", _ref: ownerId},

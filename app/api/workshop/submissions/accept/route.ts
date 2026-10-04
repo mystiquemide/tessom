@@ -26,6 +26,11 @@ const bodySchema = z
     submissionId: z.string().trim().regex(SUBMISSION_REVIEW_ID_PATTERN),
     /** The workshop's own valuation per metre. The submitter never sets a price. */
     valuePerM: z.number().finite().positive().max(5000),
+    /** Optional corrections from the workshop, for example after reading the selvage. */
+    fabricName: z.string().trim().max(160).optional(),
+    maker: z.string().trim().max(160).optional(),
+    directional: z.boolean().optional(),
+    repeat: z.object({vCm: z.number().positive().max(1000).optional(), hCm: z.number().positive().max(1000).optional()}).strict().optional(),
   })
   .strict();
 
@@ -62,7 +67,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     if (!submission || submission._type !== "submission") return respond({error: "Offer not found"}, 404);
     if (submission.status !== "new") return respond({error: "This offer was already handled"}, 409);
 
-    const {ownerId, remnantId, owner, remnant} = buildAcceptDocuments(submission, input.valuePerM);
+    const {ownerId, remnantId, owner, remnant} = buildAcceptDocuments(submission, input.valuePerM, {fabricName: input.fabricName, maker: input.maker, repeat: input.repeat, directional: input.directional});
     const contact = decryptBuyerContact(submission.contact);
 
     await client
