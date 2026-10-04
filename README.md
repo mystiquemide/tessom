@@ -4,11 +4,12 @@ Every offcut has a next piece. Leftover upholstery fabric, cut into one-off cush
 
 [![CI](https://github.com/mystiquemide/tessom/actions/workflows/ci.yml/badge.svg)](https://github.com/mystiquemide/tessom/actions/workflows/ci.yml)
 
-![A cut plan: dashed blue panels drawn on a real offcut, with a hatched flaw kept clear](public/readme/cut-plan.png)
+[![Watch the Tessom demo (2:32)](public/readme/demo-thumbnail.jpg)](https://youtu.be/HU9j5eTUA84)
 
 | | |
 |---|---|
 | Live site | https://tessom.midelabs.xyz |
+| Demo video | https://youtu.be/HU9j5eTUA84 |
 | Sanity project ID | `59g78icb` |
 | Dataset | `production` (public read) |
 | DEV post | Pending |
