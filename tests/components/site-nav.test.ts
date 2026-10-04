@@ -27,21 +27,28 @@ describe("SiteNav", () => {
   });
 
   it("shows every link on the landing page", () => {
-    expect(desktopLinks(renderToStaticMarkup(createElement(SiteNav)))).toEqual(["Workshop", "Owners", "Browse pieces"]);
+    expect(desktopLinks(renderToStaticMarkup(createElement(SiteNav)))).toEqual(["Offer fabric", "Workshop", "Owners", "Browse pieces"]);
   });
 
   it("drops the Workshop link on the workshop page", () => {
     path = "/workshop";
     const html = renderToStaticMarkup(createElement(SiteNav));
-    expect(desktopLinks(html)).toEqual(["Owners", "Browse pieces"]);
+    expect(desktopLinks(html)).toEqual(["Offer fabric", "Owners", "Browse pieces"]);
     expect(html).not.toContain(">Workshop<");
   });
 
   it("drops Owners on the owner pages and the shop pill on the shop", () => {
     path = "/owner/clara";
-    expect(desktopLinks(renderToStaticMarkup(createElement(SiteNav)))).toEqual(["Workshop", "Browse pieces"]);
+    expect(desktopLinks(renderToStaticMarkup(createElement(SiteNav)))).toEqual(["Offer fabric", "Workshop", "Browse pieces"]);
     path = "/shop";
-    expect(desktopLinks(renderToStaticMarkup(createElement(SiteNav)))).toEqual(["Workshop", "Owners"]);
+    expect(desktopLinks(renderToStaticMarkup(createElement(SiteNav)))).toEqual(["Offer fabric", "Workshop", "Owners"]);
+  });
+
+  it("drops Offer fabric on the submit page", () => {
+    path = "/submit";
+    const html = renderToStaticMarkup(createElement(SiteNav));
+    expect(desktopLinks(html)).toEqual(["Workshop", "Owners", "Browse pieces"]);
+    expect(html).not.toContain(">Offer fabric<");
   });
 
   it("keeps the logo and skip link everywhere", () => {

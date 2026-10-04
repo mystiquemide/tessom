@@ -6,6 +6,7 @@ import {usePathname} from "next/navigation";
 import {Logo} from "./logo";
 
 const LINKS = [
+  {href: "/submit", label: "Offer fabric"},
   {href: "/workshop", label: "Workshop"},
   {href: "/owner", label: "Owners"},
 ];
