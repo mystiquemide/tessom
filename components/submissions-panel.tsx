@@ -197,7 +197,7 @@ export function SubmissionsPanel({pin, onChanged, onLocked}: {pin: string; onCha
       {cards && cards.length > 0 && (
         <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map((card) => (
-            <SubmissionItem key={card.id} card={card} pin={pin} onChanged={() => { onChanged(); setReload((count) => count + 1); }} onLocked={onLocked} />
+            <SubmissionItem key={card.id} card={card} pin={pin} onChanged={onChanged} onLocked={onLocked} />
           ))}
         </ul>
       )}
